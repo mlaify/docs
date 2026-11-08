@@ -1,0 +1,9 @@
+{{- /* Code blocks: optional {title="file.py"} bar, and a copy button (assets/js/docs.js). */ -}}
+{{- $title := .Attributes.title -}}
+<div class="code-block not-prose">
+  <div class="code-block-bar">
+    <span class="code-block-title">{{ with $title }}{{ . }}{{ else }}{{ .Type }}{{ end }}</span>
+    <button type="button" class="code-copy" data-code-copy aria-label="Copy code">Copy</button>
+  </div>
+  {{- transform.Highlight .Inner .Type (merge .Options (dict "lineNos" false)) -}}
+</div>

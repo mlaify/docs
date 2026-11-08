@@ -1,35 +1,37 @@
 {
-  // docs.mlaify.io — MkDocs Material, served as Workers static assets.
+  // docs.mlaify.io — Hugo + Pagefind, served as Workers static assets.
   //
   // There is deliberately no `main` and no Worker script. With `assets` and no
   // `main`, requests are served entirely by Cloudflare's asset worker: no
   // Worker invocation, no per-request cost, nothing to keep warm.
   //
-  // Build and deploy are driven by Workers Builds (Cloudflare clones the repo
-  // and runs the build itself) — see README.md. There is no GitHub Actions
-  // deploy any more, and no rsync.
+  // Deployed only by .github/workflows/deploy.yml after the operator approves
+  // the `production` environment. Workers Builds builds every push and only
+  // uploads a version. See README.md "Deploy".
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "docs-mlaify-io",
   "compatibility_date": "2026-07-28",
 
   "assets": {
-    "directory": "./site",
+    "directory": "./public",
 
-    // MkDocs emits site/<path>/index.html, so /install must redirect to
+    // Hugo emits public/<path>/index.html, so /install must redirect to
     // /install/. This reproduces what GitHub Pages did implicitly and what
     // LiteSpeed's DirectorySlash did on InterServer.
     "html_handling": "auto-trailing-slash",
 
-    // MkDocs builds site/404.html. This serves it with a real 404 status.
+    // Hugo builds public/404.html. This serves it with a real 404 status.
     // Must NOT be "single-page-application" — that would return 200 for every
     // missing path and let soft-404s into the index.
     "not_found_handling": "404-page"
   },
 
-  // docs.fhrp.org, docs.matthewd.xyz, docs.mldavis.me, and docs.tffhrtp.org
-  // serve the same docs directly (not redirects) because some services refuse
-  // to follow them; canonical URLs still point at docs.mlaify.io. They must be
-  // listed here — `wrangler deploy` replaces any domains attached in the dashboard.
+  // docs.fhrp.org, docs.mldavis.me, and docs.tffhrtp.org serve the same docs
+  // directly (not redirects) because some services refuse to follow them;
+  // canonical URLs still point at docs.mlaify.io. They must be listed here —
+  // `wrangler deploy` replaces any domains attached in the dashboard.
+  // docs.matthewd.xyz was dropped on 2026-11-08 (operator): matthewd.xyz is the
+  // personal site now. The next deploy detaches it from this Worker.
   "routes": [
     {
       "pattern": "docs.mlaify.io",
@@ -37,10 +39,6 @@
     },
     {
       "pattern": "docs.fhrp.org",
-      "custom_domain": true
-    },
-    {
-      "pattern": "docs.matthewd.xyz",
       "custom_domain": true
     },
     {

@@ -1,0 +1,34 @@
+[[footer]]
+  name = "mlaify.io"
+  url = "https://mlaify.io/"
+  weight = 10
+
+[[footer]]
+  name = "AttackMap"
+  url = "https://mlaify.io/attackmap/"
+  weight = 20
+
+[[footer]]
+  name = "grrclone"
+  url = "https://mlaify.io/grrclone/"
+  weight = 25
+
+[[footer]]
+  name = "Contribute"
+  url = "https://mlaify.io/contribute/"
+  weight = 30
+
+[[footer]]
+  name = "Privacy"
+  url = "https://mlaify.io/privacy-policy/"
+  weight = 40
+
+[[footer]]
+  name = "Security"
+  url = "https://mlaify.io/security/"
+  weight = 50
+
+[[footer]]
+  name = "Docs source"
+  url = "https://github.com/mlaify/docs"
+  weight = 60

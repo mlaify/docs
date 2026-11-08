@@ -1,7 +1,7 @@
 """Check that the Analyzer SDK page's example plugin works against core.
 
-Extracts the ```python title="my_package/analyzer.py"``` block from
-docs/sdk.md, loads it as a module and runs it the way core does. Also checks
+Extracts the ```python {title="my_package/analyzer.py"}``` block from
+content/attackmap/sdk.md, loads it as a module and runs it the way core does. Also checks
 that the page's metadata field table and signal model list stay in step with
 the installed `attackmap.sdk`.
 
@@ -24,7 +24,7 @@ attackmap = pytest.importorskip("attackmap")
 from attackmap import sdk  # noqa: E402
 from attackmap.analyzers import _is_valid_analyzer, analyze_repository  # noqa: E402
 
-SDK_PAGE = Path(__file__).resolve().parent.parent / "docs" / "sdk.md"
+SDK_PAGE = Path(__file__).resolve().parent.parent / "content" / "attackmap" / "sdk.md"
 EXAMPLE_TITLE = "my_package/analyzer.py"
 
 
@@ -34,7 +34,7 @@ def _page() -> str:
 
 def _example_source() -> str:
     pattern = re.compile(
-        r'^```python title="' + re.escape(EXAMPLE_TITLE) + r'"\n(.*?)^```$',
+        r'^```python \{title="' + re.escape(EXAMPLE_TITLE) + r'"\}\n(.*?)^```$',
         re.DOTALL | re.MULTILINE,
     )
     blocks = pattern.findall(_page())

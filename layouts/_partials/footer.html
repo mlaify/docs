@@ -1,0 +1,23 @@
+<footer class="mt-24 border-t border-ink-200/60 dark:border-ink-800/60">
+  <div class="container-wide py-10">
+    <div class="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
+      <div class="max-w-md text-sm text-ink-600 dark:text-ink-400">
+        © {{ now.Year }} M&amp;L AI ·
+        <a class="underline hover:text-copper-700" href="https://github.com/mlaify/docs">Source on GitHub</a>
+      </div>
+      <nav class="text-sm" aria-label="Footer">
+        <ul class="grid grid-cols-2 gap-x-8 gap-y-2 md:grid-cols-3">
+          {{ range site.Menus.footer }}
+            <li><a class="hover:text-copper-700 dark:hover:text-copper-400" href="{{ .URL }}">{{ .Name }}</a></li>
+          {{ end }}
+        </ul>
+      </nav>
+    </div>
+    <p class="mt-8 text-xs text-ink-500 dark:text-ink-400">
+      Hosted on
+      <a class="underline" href="https://workers.cloudflare.com/">Cloudflare Workers</a>.
+      <a class="underline" href="/llms.txt">llms.txt</a> ·
+      <a class="underline" href="/.well-known/security.txt">security.txt</a>
+    </p>
+  </div>
+</footer>

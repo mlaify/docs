@@ -1,5 +1,10 @@
 name: docs-ci
 
+# Builds the site exactly as Workers Builds and the deploy job do (npm run
+# build:cf), then checks it: every old docs.mlaify.io URL and heading anchor
+# still resolves, internal links work, and the AttackMap pages still match the
+# real CLI and SDK. The job name `build-and-test` is the required check.
+
 on:
   pull_request:
   push:
@@ -8,25 +13,65 @@ on:
 permissions:
   contents: read
 
+env:
+  HUGO_VERSION: 0.162.1
+
 jobs:
   build-and-test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+
+      - name: Hugo
+        run: |
+          base="https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}"
+          tarball="hugo_extended_${HUGO_VERSION}_linux-amd64.tar.gz"
+          cd "$RUNNER_TEMP"
+          curl -fsSLO "$base/$tarball"
+          curl -fsSLO "$base/hugo_${HUGO_VERSION}_checksums.txt"
+          grep " ${tarball}\$" "hugo_${HUGO_VERSION}_checksums.txt" | sha256sum -c -
+          mkdir hugo && tar -xzf "$tarball" -C hugo hugo
+          echo "$RUNNER_TEMP/hugo" >>"$GITHUB_PATH"
+
+      # npm ci, Hugo (fails on a broken link or anchor between pages), Pagefind,
+      # scripts/check-build.sh.
+      - name: Build (same steps as Workers Builds)
+        run: npm run build:cf
+
+      - name: Old URLs and heading anchors still resolve
+        run: |
+          bash scripts/check-redirects.sh
+          bash scripts/check-anchors.sh
+
+      - name: Internal links in the built site
+        uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2.9.0
+        with:
+          args: >-
+            --offline
+            --no-progress
+            --root-dir ${{ github.workspace }}/public
+            --exclude-path public/pagefind
+            "public/**/*.html"
+          fail: true
+
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: "3.12"
-      - name: Install docs requirements, pytest and AttackMap with all plugins
+
+      - name: Install pytest and AttackMap with all plugins
         run: |
-          python -m pip install --disable-pip-version-check -r requirements.txt pytest \
+          # [all] pins the analyzers' released versions, which are on pkg.mlaify.io, not
+          # PyPI (AttackMap#411).
+          python -m pip install --disable-pip-version-check pytest \
+            --extra-index-url https://pkg.mlaify.io/pypi/simple/ \
             "attackmap[all] @ git+https://github.com/mlaify/AttackMap.git"
-      - name: Build the site (same steps as the Cloudflare build:cf)
-        run: |
-          mkdocs build --strict
-          find site -name '*.map' -delete
-          bash scripts/check-build.sh
-      - name: Run docs tests (SDK example, analyzers table, CLI reference drift)
+
+      - name: Docs tests (SDK example, analyzers table, CLI reference drift)
         run: pytest tests/

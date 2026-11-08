@@ -1,0 +1,23 @@
+[goldmark.renderer]
+  unsafe = true
+
+[goldmark.parser]
+  autoHeadingID = true
+  # Python-Markdown (MkDocs) style ids: "Cross-repo / fleet analysis" becomes
+  # cross-repo-fleet-analysis, so links to the old docs' headings keep working.
+  # scripts/check-anchors.sh compares them against the list from the MkDocs build.
+  autoHeadingIDType = "blackfriday"
+  [goldmark.parser.attribute]
+    block = true
+    title = true
+
+[highlight]
+  codeFences = true
+  guessSyntax = false
+  lineNos = false
+  noClasses = false
+  tabWidth = 2
+
+[tableOfContents]
+  startLevel = 2
+  endLevel = 3

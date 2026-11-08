@@ -1,0 +1,23 @@
+{{- $order := partial "docs-order.html" . -}}
+{{- $idx := -1 -}}
+{{- range $i, $e := $order -}}
+  {{- if eq $e.page.RelPermalink $.RelPermalink -}}{{- $idx = $i -}}{{- end -}}
+{{- end -}}
+{{- if ge $idx 0 -}}
+{{- $prev := cond (gt $idx 0) (index $order (sub $idx 1)) false -}}
+{{- $next := cond (lt (add $idx 1) (len $order)) (index $order (add $idx 1)) false -}}
+<nav aria-label="Previous and next pages" class="mt-12 grid gap-4 border-t border-ink-200 pt-8 sm:grid-cols-2 dark:border-ink-800">
+  {{- with $prev }}
+  <a href="{{ .page.RelPermalink }}" rel="prev" class="card card-hover !p-4">
+    <span class="text-xs text-ink-500 dark:text-ink-400">Previous</span>
+    <span class="mt-1 block font-medium text-ink-900 dark:text-white">← {{ if eq $idx 1 }}Overview{{ else }}{{ .page.LinkTitle }}{{ end }}</span>
+  </a>
+  {{- else }}<span></span>{{ end }}
+  {{- with $next }}
+  <a href="{{ .page.RelPermalink }}" rel="next" class="card card-hover !p-4 text-right">
+    <span class="text-xs text-ink-500 dark:text-ink-400">Next</span>
+    <span class="mt-1 block font-medium text-ink-900 dark:text-white">{{ .page.LinkTitle }} →</span>
+  </a>
+  {{- end }}
+</nav>
+{{- end -}}

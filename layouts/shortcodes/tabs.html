@@ -1,0 +1,19 @@
+{{- /*
+  Tabbed alternatives (pipx / pip, Claude / OpenAI). Each {{< tab name="..." >}}
+  inside adds itself to this shortcode's store. Without JavaScript every panel is
+  shown, each under its name.
+*/ -}}
+{{- $_ := .Inner -}}
+{{- $id := printf "tabs-%d" .Ordinal -}}
+<div class="tabs not-prose" data-tabs>
+  <div role="tablist" class="tabs-list">
+    {{- range $i, $t := .Store.Get "tabs" }}
+    <button type="button" role="tab" id="{{ $id }}-tab-{{ $i }}" aria-controls="{{ $id }}-panel-{{ $i }}" aria-selected="{{ if eq $i 0 }}true{{ else }}false{{ end }}" class="tab">{{ $t.name }}</button>
+    {{- end }}
+  </div>
+  {{- range $i, $t := .Store.Get "tabs" }}
+  <div role="tabpanel" id="{{ $id }}-panel-{{ $i }}" aria-labelledby="{{ $id }}-tab-{{ $i }}" class="tab-panel prose-docs" data-tab-name="{{ $t.name }}">
+    {{ $t.content }}
+  </div>
+  {{- end }}
+</div>

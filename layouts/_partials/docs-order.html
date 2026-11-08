@@ -1,0 +1,24 @@
+{{- /*
+  The pages of this page's product in nav order: the product overview, then each
+  group named in the product's `groups` front matter, pages by weight.
+  Returns a slice of dicts: {group, page}. Pages with no group, or a group the
+  product doesn't list, are left out of the nav: the build warns about them.
+*/ -}}
+{{- $out := slice -}}
+{{- with partial "product.html" . -}}
+  {{- $root := site.GetPage (printf "/%s" .slug) -}}
+  {{- $out = $out | append (dict "group" "" "page" $root) -}}
+  {{- $all := union $root.RegularPagesRecursive $root.Sections -}}
+  {{- range $root.Params.groups -}}
+    {{- $g := . -}}
+    {{- range (where $all "Params.group" $g).ByWeight -}}
+      {{- $out = $out | append (dict "group" $g "page" .) -}}
+    {{- end -}}
+  {{- end -}}
+  {{- range $all -}}
+    {{- if not (in $root.Params.groups .Params.group) -}}
+      {{- warnf "%s: group %q is not in %s's groups, so the page is not in the nav" .File.Path .Params.group $root.Title -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return $out -}}

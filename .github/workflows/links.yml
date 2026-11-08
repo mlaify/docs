@@ -1,7 +1,7 @@
 name: links
 
-# Weekly external link check (docs#14). Internal links are already covered by
-# `mkdocs build --strict` in docs-ci.
+# Weekly external link check (docs#14). Internal links are covered by the Hugo
+# build (layouts/_markup/render-link.html) and lychee --offline in docs-ci.
 
 on:
   schedule:
@@ -27,8 +27,8 @@ jobs:
             --max-retries 5
             --retry-wait-time 10
             --accept 200,206,429,503
-            --exclude-path site
-            "docs/**/*.md" README.md
+            --exclude-path public
+            "content/**/*.md" README.md
           fail: true
           # Authenticated requests, and 503 accepted: github.com throttles bulk
           # checks of blob pages with 503 even when authenticated (both runs

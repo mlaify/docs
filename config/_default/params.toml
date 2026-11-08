@@ -1,0 +1,22 @@
+description = "Documentation for M&L AI's open-source defensive security tools."
+ogImage = "images/og.png"
+
+mainSite = "https://mlaify.io/"
+githubOrg = "https://github.com/mlaify"
+# "Edit this page" links: <editBase>/<path under content/>.
+editBase = "https://github.com/mlaify/docs/edit/main/content/"
+
+# One entry per product. The section under content/ must have the same slug.
+[[products]]
+  name = "AttackMap"
+  slug = "attackmap"
+  tagline = "Local-first, AI-assisted defensive security analysis for codebases."
+  icon = "radar"
+  page = "https://mlaify.io/attackmap/"
+  repo = "https://github.com/mlaify/AttackMap"
+
+[org]
+  name = "M&L AI"
+  url = "https://mlaify.io/"
+  logo = "https://mlaify.io/apple-touch-icon.png"
+  sameAs = ["https://github.com/mlaify"]

@@ -1,0 +1,46 @@
+{{ define "main" }}
+{{- $product := partial "product.html" . -}}
+<div class="container-wide py-10 lg:py-12">
+  <div class="grid gap-10 lg:grid-cols-[15rem_minmax(0,1fr)] xl:grid-cols-[15rem_minmax(0,1fr)_13rem]">
+    <aside class="hidden lg:block">
+      <div class="sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto pb-8">
+        {{ partial "docs-nav.html" . }}
+      </div>
+    </aside>
+
+    <article class="min-w-0" {{ with $product }}data-pagefind-body data-pagefind-filter="product:{{ .name }}"{{ end }}>
+      <header class="mb-8">
+        {{ with $product }}
+        <p class="mb-2 text-sm font-medium accent-text" data-pagefind-ignore>{{ .name }}{{ with $.Params.group }} · {{ . }}{{ end }}</p>
+        {{ end }}
+        {{- /* Python-Markdown slug of the title: the id the old MkDocs docs gave the page title. */}}
+        {{- $h1 := strings.Trim (replaceRE `[-\s]+` "-" (replaceRE `[^\w\s-]` "" (lower .Title))) "-" }}
+        <h1 id="{{ $h1 }}" class="text-balance text-3xl font-semibold tracking-tight text-ink-900 sm:text-4xl dark:text-white" data-pagefind-meta="title">{{ .Title }}</h1>
+      </header>
+
+      <div class="prose-docs">
+        {{ .Content }}
+      </div>
+
+      <div class="mt-12 flex flex-wrap items-center justify-between gap-4 text-sm text-ink-500 dark:text-ink-400" data-pagefind-ignore>
+        {{ with .File }}
+        <a class="inline-flex items-center gap-1.5 hover:text-ink-800 dark:hover:text-ink-200" href="{{ site.Params.editBase }}{{ .Path }}">
+          {{ partial "svg-icon.html" (dict "name" "pencil" "class" "h-4 w-4") }} Edit this page on GitHub
+        </a>
+        {{ end }}
+        {{ with $product }}
+        <a class="inline-flex items-center gap-1.5 hover:text-ink-800 dark:hover:text-ink-200" href="{{ .repo }}/issues">
+          {{ partial "svg-icon.html" (dict "name" "message-report" "class" "h-4 w-4") }} Report a problem
+        </a>
+        {{ end }}
+      </div>
+
+      <div data-pagefind-ignore>{{ partial "docs-pager.html" . }}</div>
+    </article>
+
+    <aside class="hidden xl:block" data-pagefind-ignore>
+      {{ partial "toc.html" . }}
+    </aside>
+  </div>
+</div>
+{{ end }}

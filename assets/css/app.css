@@ -1,0 +1,307 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* The HTML `hidden` attribute must beat any utility class that sets display. */
+  [hidden] {
+    display: none !important;
+  }
+
+  :root {
+    color-scheme: light dark;
+    --accent-50: theme("colors.brand.50");
+    --accent-100: theme("colors.brand.100");
+    --accent-500: theme("colors.brand.500");
+    --accent-600: theme("colors.brand.600");
+    --accent-700: theme("colors.brand.700");
+  }
+
+  html {
+    @apply scroll-smooth antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  body {
+    @apply bg-white text-ink-800 dark:bg-ink-950 dark:text-ink-200;
+    @apply font-sans;
+  }
+
+  ::selection {
+    background-color: var(--accent-100);
+    color: var(--accent-700);
+  }
+
+  .dark ::selection {
+    background-color: var(--accent-700);
+    color: var(--accent-50);
+  }
+
+  a:focus-visible,
+  button:focus-visible,
+  [role="button"]:focus-visible {
+    @apply outline-none ring-2 ring-offset-2 ring-offset-white dark:ring-offset-ink-950;
+    --tw-ring-color: var(--accent-500);
+  }
+}
+
+@layer components {
+  .container-page {
+    @apply mx-auto w-full max-w-content px-4 sm:px-6 lg:px-8;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition;
+  }
+
+  .btn-primary {
+    color: white;
+    background-color: var(--accent-600);
+  }
+  .btn-primary:hover {
+    background-color: var(--accent-700);
+  }
+
+  .btn-ghost {
+    @apply text-ink-700 ring-1 ring-inset ring-ink-200 hover:bg-ink-50;
+    @apply dark:text-ink-200 dark:ring-ink-700 dark:hover:bg-ink-800;
+  }
+
+  .accent-text {
+    color: var(--accent-600);
+  }
+  .dark .accent-text {
+    color: var(--accent-400);
+  }
+
+  .accent-bg {
+    background-color: var(--accent-600);
+  }
+
+  .card {
+    @apply rounded-2xl border border-ink-200 bg-white p-6 transition;
+    @apply dark:border-ink-800 dark:bg-ink-900;
+  }
+
+  .card-hover:hover {
+    @apply border-ink-300 shadow-md;
+    @apply dark:border-ink-700;
+  }
+
+  .feature-icon {
+    @apply mb-4 inline-flex h-10 w-10 items-center justify-center rounded-lg;
+    background-color: var(--accent-50);
+    color: var(--accent-600);
+  }
+  .dark .feature-icon {
+    background-color: rgb(255 255 255 / 0.05);
+    color: var(--accent-400);
+  }
+
+  .status-badge {
+    @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium uppercase tracking-wide;
+  }
+  .status-badge::before {
+    content: "";
+    display: inline-block;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 9999px;
+    background-color: currentColor;
+  }
+  .status-alpha {
+    @apply bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200;
+  }
+  .status-help {
+    @apply bg-copper-100 text-copper-800 dark:bg-copper-900/40 dark:text-copper-200;
+  }
+  .status-beta {
+    @apply bg-sky-100 text-sky-800 dark:bg-sky-900/40 dark:text-sky-200;
+  }
+  .status-stable {
+    @apply bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200;
+  }
+
+  .callout {
+    @apply my-6 rounded-xl border-l-4 bg-ink-50 p-4 dark:bg-ink-900;
+  }
+  .callout-note {
+    @apply border-brand-500;
+  }
+  .callout-warn {
+    @apply border-amber-500;
+  }
+  .callout-security {
+    @apply border-signal-500;
+  }
+
+  .prose-mlaify {
+    @apply prose max-w-none dark:prose-invert;
+    @apply prose-headings:scroll-mt-24;
+    @apply prose-pre:rounded-xl prose-pre:bg-ink-950 prose-pre:text-ink-100;
+  }
+
+  .nav-link {
+    @apply text-sm font-medium text-ink-700 hover:text-ink-900 dark:text-ink-300 dark:hover:text-white;
+  }
+  .nav-link[aria-current="page"],
+  .nav-link.active {
+    color: var(--accent-600);
+  }
+
+  .bg-grid {
+    background-image: radial-gradient(circle at 1px 1px, rgb(0 0 0 / 0.05) 1px, transparent 0);
+    background-size: 24px 24px;
+  }
+  .dark .bg-grid {
+    background-image: radial-gradient(circle at 1px 1px, rgb(255 255 255 / 0.06) 1px, transparent 0);
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Pagefind UI overrides */
+.pagefind-ui {
+  --pagefind-ui-primary: theme("colors.brand.600");
+  --pagefind-ui-text: theme("colors.ink.800");
+  --pagefind-ui-background: theme("colors.white");
+  --pagefind-ui-border: theme("colors.ink.200");
+  --pagefind-ui-tag: theme("colors.ink.100");
+  --pagefind-ui-border-radius: 0.75rem;
+  --pagefind-ui-font: inherit;
+}
+
+.dark .pagefind-ui {
+  --pagefind-ui-primary: theme("colors.brand.400");
+  --pagefind-ui-text: theme("colors.ink.100");
+  --pagefind-ui-background: theme("colors.ink.900");
+  --pagefind-ui-border: theme("colors.ink.700");
+  --pagefind-ui-tag: theme("colors.ink.800");
+}
+
+/* ---------------------------------------------------------------------------
+   Docs. Everything above is mlaify.io's theme, copied as is (keep it in step
+   with mlaify/mlaify.github.io assets/css/app.css); everything below is the
+   docs layout.
+   ------------------------------------------------------------------------- */
+
+@layer base {
+  /* mlaify.io's .accent-text and links use --accent-400 in dark mode but never
+     define it, so they fall back to the text colour there. */
+  :root {
+    --accent-400: theme("colors.brand.400");
+  }
+}
+
+@layer components {
+  .container-wide {
+    @apply mx-auto w-full max-w-[90rem] px-4 sm:px-6 lg:px-8;
+  }
+
+  .docs-nav-link {
+    @apply block rounded-md px-3 py-1.5 text-ink-600 hover:bg-ink-50 hover:text-ink-900;
+    @apply dark:text-ink-400 dark:hover:bg-ink-900 dark:hover:text-white;
+  }
+  .docs-nav-link.active {
+    @apply bg-ink-100 font-medium text-ink-900 dark:bg-ink-800 dark:text-white;
+  }
+
+  .docs-toc ul {
+    @apply list-none space-y-1 pl-0;
+  }
+  .docs-toc ul ul {
+    @apply mt-1 pl-3;
+  }
+  .docs-toc a {
+    @apply block py-0.5 text-ink-600 hover:text-ink-900 dark:text-ink-400 dark:hover:text-white;
+  }
+  .docs-toc a.active {
+    color: var(--accent-600);
+  }
+
+  .prose-docs {
+    @apply prose max-w-none dark:prose-invert;
+    @apply prose-headings:scroll-mt-24 prose-headings:font-semibold;
+    @apply prose-a:decoration-ink-300 prose-a:underline-offset-2 hover:prose-a:decoration-current;
+    @apply prose-code:rounded prose-code:bg-ink-100 prose-code:px-1 prose-code:py-0.5 prose-code:font-normal dark:prose-code:bg-ink-800;
+    @apply prose-code:before:content-none prose-code:after:content-none;
+    @apply prose-table:text-sm prose-th:text-left;
+    @apply prose-img:my-6;
+  }
+  .prose-docs a {
+    color: var(--accent-700);
+  }
+  .dark .prose-docs a {
+    color: var(--accent-400);
+  }
+  .prose-docs table {
+    @apply block overflow-x-auto;
+  }
+
+  .heading-anchor {
+    @apply ml-2 font-normal text-ink-300 no-underline opacity-0 transition-opacity dark:text-ink-600;
+  }
+  .prose-docs .heading-anchor {
+    @apply text-ink-300 no-underline dark:text-ink-600;
+  }
+  :is(h2, h3, h4):hover > .heading-anchor,
+  .heading-anchor:focus {
+    @apply opacity-100;
+  }
+
+  .code-block {
+    @apply my-6 overflow-hidden rounded-xl border border-ink-800 bg-ink-950 text-sm;
+  }
+  .code-block-bar {
+    @apply flex items-center justify-between border-b border-ink-800 px-4 py-1.5 text-xs text-ink-400;
+  }
+  .code-block-title {
+    @apply font-mono;
+  }
+  .code-copy {
+    @apply rounded px-2 py-0.5 text-ink-400 hover:bg-ink-800 hover:text-ink-100;
+  }
+  .code-block pre {
+    @apply m-0 overflow-x-auto bg-transparent p-4 leading-relaxed text-ink-100;
+  }
+  .code-block code {
+    @apply font-mono;
+  }
+
+  .tabs {
+    @apply my-6;
+  }
+  .tabs-list {
+    @apply flex gap-1 border-b border-ink-200 dark:border-ink-800;
+  }
+  .tab {
+    @apply -mb-px border-b-2 border-transparent px-3 py-2 text-sm font-medium text-ink-600 hover:text-ink-900 dark:text-ink-400 dark:hover:text-white;
+  }
+  .tab[aria-selected="true"] {
+    border-color: var(--accent-600);
+    @apply text-ink-900 dark:text-white;
+  }
+  .tab-panel > :first-child {
+    @apply mt-3;
+  }
+  /* Without JavaScript the tab buttons do nothing: hide them and show each
+     panel under its name. docs.js adds .tabs-ready. */
+  .tabs:not(.tabs-ready) .tabs-list {
+    display: none;
+  }
+  .tabs:not(.tabs-ready) .tab-panel::before {
+    content: attr(data-tab-name);
+    @apply mt-4 block text-sm font-semibold;
+  }
+
+  .product-switcher[open] > summary {
+    @apply bg-ink-100 dark:bg-ink-800;
+  }
+  .product-switcher summary::-webkit-details-marker {
+    display: none;
+  }
+}
