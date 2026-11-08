@@ -66,6 +66,10 @@ jobs:
             xcrun docc process-archive transform-for-static-hosting "$archive" \
               --output-path "$RUNNER_TEMP/out/$lower" \
               --hosting-base-path "grrclone/reference/$lower"
+            # DocC asks for theme-settings.json on every page: link colours from
+            # mlaify.io's copper accent (light and dark).
+            printf '%s\n' '{"theme":{"color":{"link":{"light":"#b45309","dark":"#fb923c"}}}}' \
+              > "$RUNNER_TEMP/out/$lower/theme-settings.json"
           done
           printf '%s\n' "$TAG" > "$RUNNER_TEMP/out/RELEASE"
           du -sh "$RUNNER_TEMP/out"/*
