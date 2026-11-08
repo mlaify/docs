@@ -1,0 +1,31 @@
+{{- /*
+  Links between docs pages are written as relative Markdown file links
+  (`install.md`, `scanning.md#recall-mode`), which also work when the source is
+  read on GitHub. Resolve them to the page's URL, and fail the build if the page
+  or the heading anchor doesn't exist.
+*/ -}}
+{{- $dest := .Destination -}}
+{{- $u := urls.Parse $dest -}}
+{{- if and (not $u.Scheme) (strings.HasSuffix $u.Path ".md") -}}
+  {{- $target := .Page.GetPage (strings.TrimSuffix ".md" $u.Path) -}}
+  {{- if not $target -}}
+    {{- $target = .Page.GetPage $u.Path -}}
+  {{- end -}}
+  {{- if not $target -}}
+    {{- errorf "%s: link to %q: no such page" .Page.File.Path $dest -}}
+  {{- else -}}
+    {{- $dest = $target.RelPermalink -}}
+    {{- with $u.Fragment -}}
+      {{- if not (in $target.Fragments.Identifiers .) -}}
+        {{- errorf "%s: link to %q: %s has no heading #%s" $.Page.File.Path $.Destination $target.File.Path . -}}
+      {{- end -}}
+      {{- $dest = printf "%s#%s" $dest . -}}
+    {{- end -}}
+  {{- end -}}
+{{- else if and (not $u.Scheme) (not $u.Path) $u.Fragment -}}
+  {{- if not (in .Page.Fragments.Identifiers $u.Fragment) -}}
+    {{- errorf "%s: link to %q: no such heading on this page" .Page.File.Path $dest -}}
+  {{- end -}}
+{{- end -}}
+<a href="{{ $dest | safeURL }}"{{ with .Title }} title="{{ . }}"{{ end }}{{ if $u.Scheme }} rel="noopener"{{ end }}>{{ .Text | safeHTML }}</a>
+{{- /* no trailing newline */ -}}

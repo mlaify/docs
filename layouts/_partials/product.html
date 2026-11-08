@@ -1,0 +1,9 @@
+{{- /* The product (from site.Params.products) that this page belongs to, or nothing. */ -}}
+{{- $found := false -}}
+{{- with .Section -}}
+  {{- $slug := . -}}
+  {{- range site.Params.products -}}
+    {{- if eq .slug $slug -}}{{- $found = . -}}{{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return $found -}}

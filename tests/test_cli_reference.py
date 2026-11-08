@@ -1,4 +1,4 @@
-"""docs/cli.md stays in sync with the real CLI (docs#14).
+"""content/attackmap/cli.md stays in sync with the real CLI (docs#14).
 
 For `analyze`, `suggest` and `bench`, every long option the CLI accepts must
 appear in that command's section, every option the section names must exist,
@@ -17,7 +17,7 @@ import pytest
 typer = pytest.importorskip("typer")
 cli = pytest.importorskip("attackmap.cli")
 
-CLI_MD = Path(__file__).resolve().parents[1] / "docs" / "cli.md"
+CLI_MD = Path(__file__).resolve().parents[1] / "content" / "attackmap" / "cli.md"
 COMMANDS = ("analyze", "suggest", "bench")
 OPTION = re.compile(r"(?<![\w-])(--[a-z][a-z0-9-]*)")
 ROW = re.compile(r"^\|\s*`(--[a-z][a-z0-9-]*)(?:\s*\{([^}`]*)\})?[^`]*`[^|]*\|(.*)\|\s*$", re.M)
@@ -37,7 +37,7 @@ CHOICES = {
 def _section(name: str) -> str:
     text = CLI_MD.read_text(encoding="utf-8")
     match = re.search(rf"^## `{name}`\n(.*?)(?=^## |\Z)", text, re.S | re.M)
-    assert match, f"docs/cli.md has no '## `{name}`' section"
+    assert match, f"content/attackmap/cli.md has no '## `{name}`' section"
     return match.group(1)
 
 

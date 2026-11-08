@@ -1,0 +1,45 @@
+title = "M&L AI Docs"
+baseURL = "https://docs.mlaify.io/"
+disableHugoGeneratorInject = true
+enableEmoji = true
+enableRobotsTXT = false
+locale = "en-US"
+defaultContentLanguage = "en"
+
+# A broken ref (a Markdown link to a page or heading that doesn't exist) fails the
+# build. layouts/_markup/render-link.html raises these for `page.md#anchor` links.
+refLinksErrorLevel = "ERROR"
+
+disableKinds = ["taxonomy", "term"]
+
+[outputs]
+  home = ["html", "sitemap", "llms", "llmsfull"]
+  section = ["html"]
+  page = ["html"]
+
+# /llms.txt: a short index of every docs page, generated from the nav.
+[outputFormats.llms]
+  mediaType = "text/plain"
+  baseName = "llms"
+  isPlainText = true
+  notAlternative = true
+
+# /llms-full.txt: the Markdown of every docs page in one file, for LLM agents.
+[outputFormats.llmsfull]
+  mediaType = "text/plain"
+  baseName = "llms-full"
+  isPlainText = true
+  notAlternative = true
+
+[sitemap]
+  changefreq = "weekly"
+  filename = "sitemap.xml"
+  priority = 0.6
+
+[minify.tdewolff.html]
+  keepComments = false
+  keepWhitespace = false
+
+[security]
+  [security.funcs]
+    getenv = ["^HUGO_", "^CI$"]

@@ -1,0 +1,19 @@
+# {{ site.Title }} — full text
+
+> {{ site.Params.description }}
+
+This file contains the Markdown of every page on {{ site.BaseURL }}, in nav order. A shorter index is at {{ "llms.txt" | absURL }}.
+{{ range site.Params.products }}{{ $root := site.GetPage (printf "/%s" .slug) }}{{ range partial "docs-order.html" $root }}{{ $p := .page }}
+---
+
+URL: {{ $p.Permalink }}
+
+# {{ $p.Title }}
+{{ $md := $p.RawContent -}}
+{{- /* Shortcodes don't mean anything outside the site: keep their content, drop the markers. */ -}}
+{{- $md = replaceRE `\{\{< tab name="([^"]*)" >\}\}` "**$1:**" $md -}}
+{{- $md = replaceRE `\{\{< callout type="[^"]*" title="([^"]*)" >\}\}` "> **$1**" $md -}}
+{{- $md = replaceRE `(?m)^\{\{[<%][^}]*[>%]\}\}\n?` "" $md -}}
+{{- $md = replaceRE `\]\(([a-z0-9-]+)\.md(#[^)]*)?\)` (printf "](%s$1/$2)" $root.Permalink) $md }}
+{{ $md | strings.TrimSpace }}
+{{ end }}{{ end }}

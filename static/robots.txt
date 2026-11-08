@@ -1,0 +1,7 @@
+# M&L AI documentation. Search engines, AI crawlers, and AI training are all welcome.
+# Zones with Cloudflare's managed robots.txt prepend their own crawler list.
+User-agent: *
+Content-Signal: search=yes,ai-input=yes,ai-train=yes
+Allow: /
+
+Sitemap: https://docs.mlaify.io/sitemap.xml

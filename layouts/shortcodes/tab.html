@@ -1,0 +1,5 @@
+{{- with .Parent -}}
+  {{- .Store.Add "tabs" (slice (dict "name" ($.Get "name") "content" ($.Inner | strings.TrimSpace | $.Page.RenderString (dict "display" "block")))) -}}
+{{- else -}}
+  {{- errorf "%s: tab %q must be inside {{< tabs >}}" .Page.File.Path (.Get "name") -}}
+{{- end -}}

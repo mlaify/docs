@@ -1,0 +1,72 @@
+{{- $product := partial "product.html" . -}}
+{{- $siteTitle := site.Title -}}
+{{- $pageTitle := site.Title -}}
+{{- if not .IsHome -}}
+  {{- $pageTitle = printf "%s · %s" .Title $siteTitle -}}
+  {{- if and $product (ne .Title $product.name) -}}
+    {{- $pageTitle = printf "%s · %s docs" .Title $product.name -}}
+  {{- end -}}
+{{- end -}}
+{{- $description := .Description | default .Summary | default site.Params.description -}}
+{{- $ogImageURL := absURL site.Params.ogImage -}}
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#0c0a09" media="(prefers-color-scheme: dark)" />
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+
+<title>{{ $pageTitle }}</title>
+<meta name="description" content="{{ $description }}" />
+<link rel="canonical" href="{{ .Permalink }}" />
+
+<meta property="og:type" content="{{ cond .IsHome "website" "article" }}" />
+<meta property="og:title" content="{{ $pageTitle }}" />
+<meta property="og:description" content="{{ $description }}" />
+<meta property="og:url" content="{{ .Permalink }}" />
+<meta property="og:site_name" content="{{ $siteTitle }}" />
+<meta property="og:image" content="{{ $ogImageURL }}" />
+<meta name="twitter:card" content="summary_large_image" />
+
+<link rel="icon" href="/favicon.ico" sizes="any" />
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+<link rel="preconnect" href="https://rsms.me/" crossorigin />
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
+<link rel="stylesheet" href="/pagefind/pagefind-ui.css" />
+
+{{- $app := resources.Get "css/app.css" | postCSS (dict "config" "./postcss.config.js") -}}
+{{- $css := slice $app (resources.Get "css/chroma.css") | resources.Concat "css/app.css" -}}
+{{- if hugo.IsProduction -}}
+  {{- $css = $css | minify | fingerprint -}}
+{{- end -}}
+<link rel="stylesheet" href="{{ $css.RelPermalink }}" {{ if hugo.IsProduction }}integrity="{{ $css.Data.Integrity }}"{{ end }} />
+
+<!-- Inline early to prevent a flash of the wrong theme. Same key as mlaify.io. -->
+<script>
+  (function () {
+    try {
+      var s = localStorage.getItem("mlaify-theme");
+      var dark = s === "dark" || (!s && matchMedia("(prefers-color-scheme: dark)").matches);
+      if (dark) document.documentElement.classList.add("dark");
+    } catch (e) {}
+  })();
+</script>
+
+<script type="application/ld+json">
+{{- $org := site.Params.org }}
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": {{ site.Title | jsonify }},
+  "url": {{ site.BaseURL | jsonify }},
+  "publisher": {
+    "@type": "Organization",
+    "name": {{ $org.name | jsonify }},
+    "url": {{ $org.url | jsonify }},
+    "logo": {{ $org.logo | jsonify }},
+    "sameAs": {{ $org.sameAs | jsonify }}
+  }
+}
+</script>

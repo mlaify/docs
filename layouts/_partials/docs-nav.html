@@ -1,0 +1,20 @@
+{{- $current := . -}}
+{{- $order := partial "docs-order.html" . -}}
+<nav aria-label="Docs">
+  {{- $group := "-" -}}
+  {{- range $i, $e := $order -}}
+    {{- if ne $e.group $group -}}
+      {{- if ne $i 0 }}</ul>{{ end -}}
+      {{- with $e.group }}
+      <h2 class="mb-2 mt-6 px-3 text-xs font-semibold uppercase tracking-wide text-ink-500 dark:text-ink-400">{{ . }}</h2>
+      {{- end }}
+      <ul class="space-y-0.5 text-sm">
+      {{- $group = $e.group -}}
+    {{- end }}
+    {{- $active := eq $e.page.RelPermalink $current.RelPermalink }}
+    <li>
+      <a href="{{ $e.page.RelPermalink }}" class="docs-nav-link{{ if $active }} active{{ end }}"{{ if $active }} aria-current="page"{{ end }}>{{ if eq $i 0 }}Overview{{ else }}{{ $e.page.LinkTitle }}{{ end }}</a>
+    </li>
+  {{- end }}
+  {{- if $order }}</ul>{{ end }}
+</nav>

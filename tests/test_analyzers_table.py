@@ -1,4 +1,4 @@
-"""Check that docs/analyzers.md stays in step with `attackmap modules --json`.
+"""Check that content/attackmap/analyzers.md stays in step with `attackmap modules --json`.
 
 Every installed analyzer module must have a row in one of the page's module
 tables, and the row's Priority, Runs (default / opt-in) and Experimental
@@ -26,7 +26,7 @@ import pytest
 
 pytest.importorskip("attackmap")
 
-ANALYZERS_PAGE = Path(__file__).resolve().parent.parent / "docs" / "analyzers.md"
+ANALYZERS_PAGE = Path(__file__).resolve().parent.parent / "content" / "attackmap" / "analyzers.md"
 OFFICIAL_PLUGIN_COUNT = 15
 
 
@@ -88,7 +88,7 @@ def rows() -> dict[str, dict[str, str]]:
 
 def test_every_module_has_a_row(modules: list[dict], rows: dict[str, dict[str, str]]) -> None:
     missing = sorted(m["name"] for m in modules if m["name"] not in rows)
-    assert not missing, f"modules missing from docs/analyzers.md tables: {missing}"
+    assert not missing, f"modules missing from content/attackmap/analyzers.md tables: {missing}"
 
 
 def test_runs_column_matches_enabled_by_default(

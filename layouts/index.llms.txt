@@ -1,0 +1,17 @@
+# {{ site.Title }}
+
+> {{ site.Params.description }}
+
+Each product's documentation lives under its own path. The full text of every page is in {{ "llms-full.txt" | absURL }}.
+{{ range site.Params.products }}{{ $root := site.GetPage (printf "/%s" .slug) }}
+## {{ .name }}
+
+{{ .tagline }} Project page: {{ .page }}. Source: {{ .repo }}.
+{{ range partial "docs-order.html" $root }}
+- [{{ if .group }}{{ .page.LinkTitle }}{{ else }}{{ $root.Title }} overview{{ end }}]({{ .page.Permalink }}){{ with .page.Description }}: {{ . }}{{ end }}{{ end }}
+{{ end }}
+## Optional
+
+- [Full text]({{ "llms-full.txt" | absURL }}): Every documentation page in one plain-text file.
+- [mlaify.io]({{ site.Params.mainSite }}): The products.
+- [Sitemap]({{ "sitemap.xml" | absURL }})
