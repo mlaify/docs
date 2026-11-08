@@ -1,0 +1,87 @@
+# Builds grrclone's Swift API reference (DocC) on a GitHub-hosted macOS runner and
+# uploads it as an artifact. It never pushes: the output is committed by a PR, like
+# the AttackMap SDK reference and the mlaify.io changelogs, so the site build never
+# needs Xcode and the deployed reference always matches a grrclone release.
+#
+# After a grrclone release: Actions → grrclone-reference → Run workflow, with the tag.
+# Then download the artifact and put it in static/grrclone/reference/ (see README.md).
+#
+# macOS runners are free for public repositories. DocC needs macOS: GrrCloneCore uses
+# macOS-only APIs (keychain, /sbin/mount, diskutil), so it doesn't build on Linux.
+name: grrclone-reference
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "grrclone release tag, e.g. v0.9.5"
+        required: true
+  # A change to this workflow builds the reference for the default tag, so the PR
+  # proves it works before it is merged.
+  pull_request:
+    paths:
+      - .github/workflows/grrclone-reference.yml
+
+permissions:
+  contents: read
+
+env:
+  TAG: ${{ inputs.tag || 'v0.9.5' }}
+
+jobs:
+  docc:
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - name: Check the tag
+        run: |
+          case "$TAG" in
+            v[0-9]*.[0-9]*.[0-9]*) ;;
+            *) echo "not a release tag: $TAG" >&2; exit 1 ;;
+          esac
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: mlaify/grrclone
+          ref: ${{ env.TAG }}
+          persist-credentials: false
+
+      - name: Toolchain
+        run: |
+          swift --version
+          xcodebuild -version
+
+      # One DocC site per library module, each served under
+      # docs.mlaify.io/grrclone/reference/<module>/.
+      - name: Build DocC
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/out"
+          for module in RcloneRC GrrCloneCore; do
+            lower=$(printf '%s' "$module" | tr '[:upper:]' '[:lower:]')
+            xcodebuild docbuild -scheme "$module" -destination 'generic/platform=macOS' \
+              -derivedDataPath "$RUNNER_TEMP/dd" -quiet
+            archive=$(find "$RUNNER_TEMP/dd" -name "$module.doccarchive" -type d | head -n 1)
+            [ -n "$archive" ] || { echo "no $module.doccarchive" >&2; exit 1; }
+            xcrun docc process-archive transform-for-static-hosting "$archive" \
+              --output-path "$RUNNER_TEMP/out/$lower" \
+              --hosting-base-path "grrclone/reference/$lower"
+            # DocC asks for theme-settings.json on every page: link colours from
+            # mlaify.io's copper accent (light and dark).
+            printf '%s\n' '{"theme":{"color":{"link":{"light":"#b45309","dark":"#fb923c"}}}}' \
+              > "$RUNNER_TEMP/out/$lower/theme-settings.json"
+          done
+          printf '%s\n' "$TAG" > "$RUNNER_TEMP/out/RELEASE"
+          du -sh "$RUNNER_TEMP/out"/*
+          find "$RUNNER_TEMP/out" -type f | wc -l
+          # DocC names some files after Swift symbols, e.g. `!=(_:_:).json`, and an
+          # artifact may not contain a colon in a path (it must unpack on NTFS). One
+          # tarball keeps the names as they are; they're fine in git and on Cloudflare.
+          tar -czf "$RUNNER_TEMP/grrclone-reference.tar.gz" -C "$RUNNER_TEMP/out" .
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: grrclone-reference-${{ env.TAG }}
+          path: ${{ runner.temp }}/grrclone-reference.tar.gz
+          if-no-files-found: error
+          retention-days: 30

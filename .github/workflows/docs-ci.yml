@@ -58,6 +58,7 @@ jobs:
             --no-progress
             --root-dir ${{ github.workspace }}/public
             --exclude-path public/pagefind
+            --exclude-path public/grrclone/reference
             "public/**/*.html"
           fail: true
 

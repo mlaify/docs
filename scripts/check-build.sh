@@ -30,7 +30,9 @@ note() {
 
 # Every product page must be in the search index. Pagefind indexes only pages
 # with data-pagefind-body, so a layout change could silently drop them.
-pages=$(find public -path public/pagefind -prune -o -name index.html -print | grep -c -v '^public/index.html$' || true)
+# Generated API references (static/<product>/reference/, e.g. grrclone's DocC
+# sites) are JavaScript apps with their own navigation, not Hugo pages: skipped.
+pages=$(find public \( -path public/pagefind -o -path 'public/*/reference' \) -prune -o -name index.html -print | grep -c -v '^public/index.html$' || true)
 indexed=$(grep -l 'data-pagefind-body' -r public --include=index.html | wc -l | tr -d ' ')
 [ "$indexed" -gt 0 ] && [ "$indexed" -eq "$pages" ] || note "$indexed of $pages docs pages carry data-pagefind-body"
 
