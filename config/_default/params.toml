@@ -1,4 +1,4 @@
-description = "Documentation for M&L AI's open-source defensive security tools."
+description = "Documentation for M&L AI's open-source projects: AttackMap, defensive security analysis for codebases, and grrclone, rclone remotes as Finder volumes."
 ogImage = "images/og.png"
 
 mainSite = "https://mlaify.io/"
@@ -14,6 +14,14 @@ editBase = "https://github.com/mlaify/docs/edit/main/content/"
   icon = "radar"
   page = "https://mlaify.io/attackmap/"
   repo = "https://github.com/mlaify/AttackMap"
+
+[[products]]
+  name = "grrclone"
+  slug = "grrclone"
+  tagline = "A macOS menu bar app that connects rclone remotes as Finder volumes."
+  icon = "cloud-network"
+  page = "https://mlaify.io/grrclone/"
+  repo = "https://github.com/mlaify/grrclone"
 
 [org]
   name = "M&L AI"

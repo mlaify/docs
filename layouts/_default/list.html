@@ -23,11 +23,16 @@
       </div>
 
       <div class="mt-12 flex flex-wrap items-center justify-between gap-4 text-sm text-ink-500 dark:text-ink-400" data-pagefind-ignore>
-        {{ with .File }}
+        {{- /* A page copied from a product repo names its source (front matter `source`); change it there. */}}
+        {{ with .Params.source }}
+        <a class="inline-flex items-center gap-1.5 hover:text-ink-800 dark:hover:text-ink-200" href="{{ . }}">
+          {{ partial "svg-icon.html" (dict "name" "file-text" "class" "h-4 w-4") }} Copied from the product repository: change it there
+        </a>
+        {{ else }}{{ with .File }}
         <a class="inline-flex items-center gap-1.5 hover:text-ink-800 dark:hover:text-ink-200" href="{{ site.Params.editBase }}{{ .Path }}">
           {{ partial "svg-icon.html" (dict "name" "pencil" "class" "h-4 w-4") }} Edit this page on GitHub
         </a>
-        {{ end }}
+        {{ end }}{{ end }}
         {{ with $product }}
         <a class="inline-flex items-center gap-1.5 hover:text-ink-800 dark:hover:text-ink-200" href="{{ .repo }}/issues">
           {{ partial "svg-icon.html" (dict "name" "message-report" "class" "h-4 w-4") }} Report a problem
