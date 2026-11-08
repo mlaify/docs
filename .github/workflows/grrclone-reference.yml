@@ -70,10 +70,14 @@ jobs:
           printf '%s\n' "$TAG" > "$RUNNER_TEMP/out/RELEASE"
           du -sh "$RUNNER_TEMP/out"/*
           find "$RUNNER_TEMP/out" -type f | wc -l
+          # DocC names some files after Swift symbols, e.g. `!=(_:_:).json`, and an
+          # artifact may not contain a colon in a path (it must unpack on NTFS). One
+          # tarball keeps the names as they are; they're fine in git and on Cloudflare.
+          tar -czf "$RUNNER_TEMP/grrclone-reference.tar.gz" -C "$RUNNER_TEMP/out" .
 
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: grrclone-reference-${{ env.TAG }}
-          path: ${{ runner.temp }}/out
+          path: ${{ runner.temp }}/grrclone-reference.tar.gz
           if-no-files-found: error
           retention-days: 30
