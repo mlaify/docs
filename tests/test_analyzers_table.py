@@ -132,4 +132,7 @@ def test_page_lists_all_official_plugins(rows: dict[str, dict[str, str]]) -> Non
     for entry in OFFICIAL_PLUGINS:
         assert f"https://github.com/mlaify/{entry['repo']}" in page, entry["repo"]
     plugin_rows = [row for row in rows.values() if "Package / repo" in row]
-    assert len(plugin_rows) == OFFICIAL_PLUGIN_COUNT
+    # One package can register several modules (attackmap-analyzer-swift has
+    # `swift` and `objc`), so count the packages the rows name, not the rows.
+    packages = {re.search(r"\[([^\]]+)\]", row["Package / repo"]).group(1) for row in plugin_rows}
+    assert len(packages) == OFFICIAL_PLUGIN_COUNT, sorted(packages)

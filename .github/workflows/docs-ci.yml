@@ -67,7 +67,10 @@ jobs:
 
       - name: Install pytest and AttackMap with all plugins
         run: |
+          # [all] pins the analyzers' released versions, which are on pkg.mlaify.io, not
+          # PyPI (AttackMap#411).
           python -m pip install --disable-pip-version-check pytest \
+            --extra-index-url https://pkg.mlaify.io/pypi/simple/ \
             "attackmap[all] @ git+https://github.com/mlaify/AttackMap.git"
 
       - name: Docs tests (SDK example, analyzers table, CLI reference drift)
