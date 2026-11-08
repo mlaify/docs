@@ -34,3 +34,17 @@ jobs:
           # checks of blob pages with 503 even when authenticated (both runs
           # flagged valid links). A dead link is a 404, which still fails.
           token: ${{ secrets.GITHUB_TOKEN }}
+
+  # One issue (label ci-failure) when this fails on a branch, with the log up to the
+  # error; closed by the next passing run. See mlaify/.github actions/report-failure.
+  report:
+    needs: [lychee]
+    if: always()
+    runs-on: ubuntu-24.04
+    permissions:
+      actions: read
+      issues: write
+    steps:
+      - uses: mlaify/.github/actions/report-failure@cb1e169ab778720d39339c57a4b6b042cafaf617
+        with:
+          result: ${{ contains(needs.*.result, 'failure') && 'failure' || (contains(needs.*.result, 'cancelled') && 'cancelled' || 'success') }}
