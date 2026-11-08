@@ -34,8 +34,8 @@ jobs:
           base="https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}"
           tarball="hugo_extended_${HUGO_VERSION}_linux-amd64.tar.gz"
           cd "$RUNNER_TEMP"
-          curl -fsSLO "$base/$tarball"
-          curl -fsSLO "$base/hugo_${HUGO_VERSION}_checksums.txt"
+          curl -fsSLO --retry 5 --retry-all-errors --retry-delay 10 "$base/$tarball"
+          curl -fsSLO --retry 5 --retry-all-errors --retry-delay 10 "$base/hugo_${HUGO_VERSION}_checksums.txt"
           grep " ${tarball}\$" "hugo_${HUGO_VERSION}_checksums.txt" | sha256sum -c -
           mkdir hugo && tar -xzf "$tarball" -C hugo hugo
           echo "$RUNNER_TEMP/hugo" >>"$GITHUB_PATH"
@@ -67,10 +67,13 @@ jobs:
 
       - name: Install pytest and AttackMap with all plugins
         run: |
-          # [all] pins the analyzers' released versions, which are on pkg.mlaify.io, not
-          # PyPI (AttackMap#411).
-          python -m pip install --disable-pip-version-check pytest \
-            --extra-index-url https://pkg.mlaify.io/pypi/simple/ \
+          # [all] pins the analyzers' releases, which are on pkg.mlaify.io, not PyPI
+          # (AttackMap#411). first-index takes each package from the first index that
+          # has it, so an analyzer name registered on PyPI by someone else is never
+          # used. Not pip --extra-index-url: pip takes the highest version from any index.
+          python -m pip install --disable-pip-version-check uv==0.9.7
+          uv pip install --system --index mlaify=https://pkg.mlaify.io/pypi/simple/ \
+            --index-strategy first-index pytest \
             "attackmap[all] @ git+https://github.com/mlaify/AttackMap.git"
 
       - name: Docs tests (SDK example, analyzers table, CLI reference drift)
