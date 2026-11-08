@@ -78,3 +78,17 @@ jobs:
 
       - name: Docs tests (SDK example, analyzers table, CLI reference drift)
         run: pytest tests/
+
+  # One issue (label ci-failure) when this fails on a branch, with the log up to the
+  # error; closed by the next passing run. See mlaify/.github actions/report-failure.
+  report:
+    needs: [build-and-test]
+    if: always() && github.event_name != 'pull_request'
+    runs-on: ubuntu-24.04
+    permissions:
+      actions: read
+      issues: write
+    steps:
+      - uses: mlaify/.github/actions/report-failure@cb1e169ab778720d39339c57a4b6b042cafaf617
+        with:
+          result: ${{ contains(needs.*.result, 'failure') && 'failure' || (contains(needs.*.result, 'cancelled') && 'cancelled' || 'success') }}
