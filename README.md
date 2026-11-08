@@ -9,7 +9,7 @@ public sites split the work:
 
 | Site | Repo | Job |
 |---|---|---|
-| [mlaify.io](https://mlaify.io) | `mlaify/mlaify.github.io` | The products: what each one is, how it works, install |
+| [mlaify.io](https://mlaify.io) | `mlaify/mlaify.io` | The products: what each one is, how it works, install |
 | **docs.mlaify.io** | **`mlaify/docs`** (this repo) | How to use them: guides and reference |
 | [matthewd.xyz](https://matthewd.xyz) | `mlaifyxyz/mlaifyxyz.github.io` | Personal site and writing |
 
@@ -143,6 +143,6 @@ Cloudflare Transform Rule also sets these headers, remove one side.
 
 The look is mlaify.io's: `tailwind.config.js`, `assets/css/app.css` (the part above the "Docs"
 marker), the icon set, the dark-mode toggle (same `localStorage` key) and the search dialog are
-copied from `mlaify/mlaify.github.io`. Keep them in step when the theme changes there. The docs
+copied from `mlaify/mlaify.io`. Keep them in step when the theme changes there. The docs
 layout itself (nav, table of contents, previous/next, tabs, code blocks) is in `layouts/` and the
 "Docs" part of `app.css`.
