@@ -2,7 +2,7 @@
   "name": "attackmap-docs",
   "version": "1.0.0",
   "private": true,
-  "description": "docs.mlaify.io \u2014 documentation for M&L AI's products (AttackMap, grrclone). Built with Hugo, Tailwind and Pagefind, sharing mlaify.io's theme.",
+  "description": "docs.mlaify.io — documentation for M&L AI's products (AttackMap, grrclone). Built with Hugo, Tailwind and Pagefind, sharing mlaify.io's theme.",
   "license": "MIT",
   "scripts": {
     "dev": "hugo server --disableFastRender --noHTTPCache",
@@ -26,5 +26,8 @@
   },
   "engines": {
     "node": ">=20.0.0"
+  },
+  "overrides": {
+    "postcss-selector-parser": "6.1.5"
   }
 }
