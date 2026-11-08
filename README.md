@@ -43,6 +43,16 @@ group: "Getting started"  # one of the groups listed in content/<product>/_index
 - **Heading ids** are Hugo's `blackfriday` style, which matches the old MkDocs ids. If a heading
   has an apostrophe or a dot, pin the old id: `## Listing what's installed {#listing-whats-installed}`.
 
+### Generated pages
+
+`content/attackmap/sdk-reference.md` is generated from `attackmap.sdk` at a release tag; don't edit it
+by hand. After an AttackMap release, regenerate it and commit the result:
+
+```bash
+python3 -m venv /tmp/am && /tmp/am/bin/pip install "attackmap @ git+https://github.com/mlaify/AttackMap.git@vX.Y.Z"
+/tmp/am/bin/python -I scripts/gen-attackmap-sdk-reference.py vX.Y.Z
+```
+
 ### Adding a product
 
 1. Add it to `products` in [`config/_default/params.toml`](config/_default/params.toml).
