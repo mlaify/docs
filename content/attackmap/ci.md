@@ -134,6 +134,31 @@ suppresses a finding only when *all* of its cited files carry a matching
 directive (or are covered by a baseline `path` glob); for a multi-file finding,
 prefer a baseline entry.
 
+On pull requests the action passes `--suppress-from-ref` with the base branch,
+so only directives that already exist there apply. A directive covers its own
+line and the line below it; when the pull request adds or changes that line,
+the existing directive no longer covers it and any finding there stays active
+(after 0.6.3). To accept it, add or update the directive on the base branch.
+The same trust rule applies to a suppress-file entry's `expires:` date (a
+pull request that extends or removes it makes the entry pending) and to
+`.attackmap-output` marker files (one that does not exist on the base branch
+does not exclude its directory from the scan; the run says so with a
+`Scan warning`).
+
+### Newly suppressed or excluded findings
+
+With a baseline, the action's `fail-on-new-suppression` input is **on by
+default** (after 0.6.3): a finding that was active in the baseline and is
+suppressed in this run, or whose directory is now skipped because of an
+`.attackmap-output` marker, fails the job, whatever silenced it and whatever
+its severity. This is defence in depth for the pull-request trust rules
+above. It also fails legitimate changes (an entry widened on the base branch,
+an expiry extended in the pull request) until they are re-trusted on the
+base. Both cases are listed in the PR comment under "Newly suppressed in this
+change" and "Newly excluded from the scan". Set the input to `false` only if
+you accept that a pull request could silence a finding without failing the
+check; the action prints a warning when it is off.
+
 ### Flags
 
 | Flag | Effect |
