@@ -104,7 +104,7 @@ See [AI review](llm.md) for details and credential resolution.
 | `--pr-comment <file>` | Write a Markdown PR summary comment. |
 | `--no-suppress` | Ignore all suppressions (baseline + inline) for a full audit. |
 | `--suppress-file <file>` | Override the `.attackmap-suppress.yaml` location. |
-| `--suppress-from-ref <ref>` | Trust only suppressions that already exist at this git ref, such as the PR's base branch. Suppress-file entries and inline directives added since then are reported as *pending* and not applied (after 0.4.31). |
+| `--suppress-from-ref <ref>` | Trust only suppressions that already exist at this git ref, such as the PR's base branch. Suppress-file entries and inline directives added since then are reported as *pending* and not applied (after 0.4.31). An inline directive already at the ref doesn't cover the line below it if that line was added or changed since (after 0.6.3). |
 | `--allow-pr-suppressions` | With `--suppress-from-ref`, apply suppressions added since the ref anyway. They are still listed (after 0.4.31). |
 | `--strict-suppressions` | Exit 2 if any suppression has expired (past its `expires:` / `until=` date) (after 0.4.31). |
 | `--fail-on-new-suppression` | Exit non-zero if a finding that was active in the baseline is suppressed in this run, for example by a suppression the PR added. Needs `--baseline` (after 0.4.31). |

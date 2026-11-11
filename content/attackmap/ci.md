@@ -134,6 +134,12 @@ suppresses a finding only when *all* of its cited files carry a matching
 directive (or are covered by a baseline `path` glob); for a multi-file finding,
 prefer a baseline entry.
 
+On pull requests the action passes `--suppress-from-ref` with the base branch,
+so only directives that already exist there apply. A directive covers its own
+line and the line below it; when the pull request adds or changes that line,
+the existing directive no longer covers it and any finding there stays active
+(after 0.6.3). To accept it, add or update the directive on the base branch.
+
 ### Flags
 
 | Flag | Effect |
