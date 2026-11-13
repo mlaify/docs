@@ -1,7 +1,8 @@
 # docs
 
 Documentation for M&L AI's products, published at **[docs.mlaify.io](https://docs.mlaify.io)**.
-Each product has its own section: [AttackMap](https://docs.mlaify.io/attackmap/) now, grrclone next.
+Each product has its own section: [AttackMap](https://docs.mlaify.io/attackmap/),
+[grrclone](https://docs.mlaify.io/grrclone/) and [openlens-fw](https://docs.mlaify.io/openlens-fw/).
 
 This repo was `mlaify/attackmap-docs` (MkDocs Material, AttackMap only) until 2026-11-08.
 It is now a Hugo site that shares mlaify.io's theme, and covers every product. The three
