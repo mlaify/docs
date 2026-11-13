@@ -1,4 +1,4 @@
-description = "Documentation for M&L AI's open-source projects: AttackMap, defensive security analysis for codebases, and grrclone, rclone remotes as Finder volumes."
+description = "Documentation for M&L AI's open-source projects: AttackMap, defensive security analysis for codebases; grrclone, rclone remotes as Finder volumes; and openlens-fw, hardened firmware for the Anpviz IPC-D240W-S camera."
 ogImage = "images/og.png"
 
 mainSite = "https://mlaify.io/"
@@ -22,6 +22,14 @@ editBase = "https://github.com/mlaify/docs/edit/main/content/"
   icon = "cloud-network"
   page = "https://mlaify.io/grrclone/"
   repo = "https://github.com/mlaify/grrclone"
+
+[[products]]
+  name = "openlens-fw"
+  slug = "openlens-fw"
+  tagline = "Hardened, open-source replacement firmware for the Anpviz IPC-D240W-S IP camera."
+  icon = "device-cctv"
+  page = "https://mlaify.io/openlens-fw/"
+  repo = "https://github.com/mlaify/openlens-fw"
 
 [org]
   name = "M&L AI"
