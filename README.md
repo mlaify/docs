@@ -76,11 +76,10 @@ npm run preview       # serve public/ through wrangler's real asset router
 `tests/` checks that the AttackMap pages still match AttackMap itself: the Analyzer SDK example
 is extracted from `content/attackmap/sdk.md` and run, the analyzers table is compared with
 `attackmap modules --json`, and the CLI reference with the real CLI. It needs AttackMap with every
-official plugin; `[all]` pins the plugins' releases, which are on pkg.mlaify.io:
+official plugin; `[all]` pins the plugins' releases, which are on PyPI:
 
 ```bash
-pip install pytest --extra-index-url https://pkg.mlaify.io/pypi/simple/ \
-  "attackmap[all] @ git+https://github.com/mlaify/AttackMap.git"
+pip install pytest "attackmap[all] @ git+https://github.com/mlaify/AttackMap.git"
 pytest tests/
 ```
 

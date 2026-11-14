@@ -136,6 +136,14 @@ package's `pyproject.toml`:
 flask-lite = "my_package.analyzer:FlaskLiteAnalyzer"
 ```
 
+List `attackmap` as a dependency, so installing your package on its own gives a
+working plugin. The `attackmap.sdk` surface is stable until 1.0:
+
+```toml
+[project]
+dependencies = ["attackmap>=0.6.0,<1.0.0"]
+```
+
 Install the package into the same environment as AttackMap. It then appears in
 `attackmap modules` and can be selected with `-m flask-lite`. If it doesn't
 appear, look for a warning from the `attackmap.analyzers` logger: failing to

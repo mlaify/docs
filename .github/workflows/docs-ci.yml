@@ -68,13 +68,10 @@ jobs:
 
       - name: Install pytest and AttackMap with all plugins
         run: |
-          # [all] pins the analyzers' releases, which are on pkg.mlaify.io, not PyPI
-          # (AttackMap#411). first-index takes each package from the first index that
-          # has it, so an analyzer name registered on PyPI by someone else is never
-          # used. Not pip --extra-index-url: pip takes the highest version from any index.
+          # [all] pins the analyzers' releases, which are on PyPI (published from
+          # their own repositories since AttackMap 0.6.4).
           python -m pip install --disable-pip-version-check uv==0.9.7
-          uv pip install --system --index mlaify=https://pkg.mlaify.io/pypi/simple/ \
-            --index-strategy first-index pytest \
+          uv pip install --system pytest \
             "attackmap[all] @ git+https://github.com/mlaify/AttackMap.git"
 
       - name: Docs tests (SDK example, analyzers table, CLI reference drift)
