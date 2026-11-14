@@ -17,8 +17,8 @@ public sites split the work:
 > [!IMPORTANT]
 > **Active development, slow pace.** Help is welcome with the docs, the products, or both:
 > open an issue on the product's repository (for AttackMap,
-> [mlaify/AttackMap](https://github.com/mlaify/AttackMap/issues)) to say hello. Security
-> reports are welcome at [security@mlaify.io](mailto:security@mlaify.io).
+> [mlaify/AttackMap](https://github.com/mlaify/AttackMap/issues)) to say hello.
+> Report vulnerabilities through the affected repository's **Security** tab using **Report a vulnerability**. Report ordinary documentation problems in public issues.
 
 ## Writing docs
 
