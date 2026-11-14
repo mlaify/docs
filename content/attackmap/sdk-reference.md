@@ -1,13 +1,13 @@
 ---
 title: "SDK reference"
-description: "Every public name in attackmap.sdk at v0.6.2: the analyzer protocol, the signal models and their fields, the allowed values, and the filesystem helpers."
+description: "Every public name in attackmap.sdk at v0.6.4: the analyzer protocol, the signal models and their fields, the allowed values, and the filesystem helpers."
 weight: 110
 group: "Extending"
-source: "https://github.com/mlaify/AttackMap/tree/v0.6.2/src/attackmap/sdk"
+source: "https://github.com/mlaify/AttackMap/tree/v0.6.4/src/attackmap/sdk"
 ---
 
 {{< callout type="note" >}}
-Generated from `attackmap.sdk` at [v0.6.2](https://github.com/mlaify/AttackMap/tree/v0.6.2/src/attackmap/sdk) by
+Generated from `attackmap.sdk` at [v0.6.4](https://github.com/mlaify/AttackMap/tree/v0.6.4/src/attackmap/sdk) by
 `scripts/gen-attackmap-sdk-reference.py`. Anything importable from `attackmap.sdk` is
 the stable analyzer contract; anything else in `attackmap` is internal. The
 [Analyzer SDK](sdk.md) guide explains how the pieces fit together.
@@ -424,7 +424,7 @@ tuple of 26: `prototype_pollution`, `mass_assignment`, `jwt_weakness`, `jwt_alg_
 ### `walk_repo` {#walk_repo}
 
 ```python
-def walk_repo(root: str | Path, *, prune: Callable[[str], bool] | None = None, on_symlink: Callable[[Path], None] | None = None) -> Iterator[Path]
+def walk_repo(root: str | Path, *, prune: Callable[[str], bool] | None = None, on_symlink: Callable[[Path], None] | None = None, on_prune: Callable[[Path], None] | None = None) -> Iterator[Path]
 ```
 
 Yield regular files under `root` (depth-first, sorted per directory).
@@ -434,7 +434,8 @@ directories are not descended — and `on_symlink(path)` is called for
 each. With `ATTACKMAP_FOLLOW_SYMLINKS=1` symlinks whose target resolves
 inside `root` are followed (cycle-safe); ones pointing outside are still
 skipped. `prune(dirname)` returning True skips descending into a
-directory.
+directory. `on_prune(dir)` is called for each directory skipped
+because it carries an output marker, so the caller can record it.
 
 ### `is_contained` {#is_contained}
 
@@ -475,7 +476,7 @@ frozenset of 18: `.attackmap`, `.attackmap-gui`, `.git`, `.mypy_cache`, `.next`,
 ### `iter_repo_files` {#iter_repo_files}
 
 ```python
-def iter_repo_files(root: str | Path, *, suffixes: Collection[str] | None = None, names: Collection[str] | None = None, skip_dirs: Collection[str] = frozenset({'.git', '.venv', 'out', '__pycache__', '.attackmap', 'bower_components', 'dist', '.tox', 'node_modules', '.attackmap-gui', '.mypy_cache', '.turbo', 'venv', 'vendor', '.pytest_cache', 'build', 'target', '.next'}), max_bytes: int | None = None, include_tests: bool = True, on_skip: Callable[[Path, str], None] | None = None) -> Iterator[Path]
+def iter_repo_files(root: str | Path, *, suffixes: Collection[str] | None = None, names: Collection[str] | None = None, skip_dirs: Collection[str] = frozenset({'venv', 'out', '__pycache__', '.pytest_cache', '.tox', '.venv', 'bower_components', '.turbo', '.attackmap', '.git', 'dist', '.attackmap-gui', '.mypy_cache', 'vendor', 'build', 'node_modules', '.next', 'target'}), max_bytes: int | None = None, include_tests: bool = True, on_skip: Callable[[Path, str], None] | None = None) -> Iterator[Path]
 ```
 
 Yield the repo's regular files, sorted and depth-first.
@@ -490,8 +491,9 @@ Yield the repo's regular files, sorted and depth-first.
   `ATTACKMAP_MAX_FILE_BYTES`) are skipped.
 - `include_tests=False` drops test/spec/fixture files (see
   `ATTACKMAP_INCLUDE_TESTS`).
-- `on_skip(path, reason)` is called for each skipped symlink or
-  oversized file, so a plugin can report what it didn't analyze.
+- `on_skip(path, reason)` is called for each skipped symlink,
+  oversized file or directory excluded by an AttackMap output marker, so
+  a plugin can report what it didn't analyze.
 
 ### `read_source` {#read_source}
 

@@ -67,7 +67,7 @@ force `api` / `cli`:
 {{< /tab >}}
 {{< /tabs >}}
 
-The API backends need the LLM extra (`pip install "attackmap[llm] @ git+https://github.com/mlaify/AttackMap.git"`); the CLI
+The API backends need the LLM extra (`pip install "attackmap[llm]"`); the CLI
 backends just need `claude` / `codex` on your `PATH`.
 
 ### Running on untrusted repositories

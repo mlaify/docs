@@ -144,10 +144,10 @@ Ways to get plugins:
     ```
 
 - **Install everything up front.** The `[all]` extra installs all 15 official
-  plugins, each pinned to its release on pkg.mlaify.io:
+  plugins, each pinned to its release on PyPI:
 
     ```bash
-    uv tool install "attackmap[all]" --index mlaify=https://pkg.mlaify.io/pypi/simple/ --index-strategy first-index
+    uv tool install "attackmap[all]"
     ```
 
     The Homebrew formula (`brew install mlaify/tap/attackmap`) also installs
