@@ -2,6 +2,8 @@ name: links
 
 # Weekly external link check (docs#14). Internal links are covered by the Hugo
 # build (layouts/_markup/render-link.html) and lychee --offline in docs-ci.
+# Root-relative links in the Markdown (/attackmap/img/..., /grrclone/...) point at
+# files Hugo serves from static/, so lychee resolves them there (--root-dir).
 
 on:
   schedule:
@@ -27,6 +29,7 @@ jobs:
             --max-retries 5
             --retry-wait-time 10
             --accept 200,206,429,503
+            --root-dir ${{ github.workspace }}/static
             --exclude-path public
             "content/**/*.md" README.md
           fail: true
