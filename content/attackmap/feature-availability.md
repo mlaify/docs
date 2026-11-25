@@ -65,7 +65,7 @@ when the CLI has `--verify-votes` (0.4.16). `--hunt-lenses`, `--hunt-rounds`
 and `--hunt-budget` need 0.4.17 and 0.4.18, so on a 0.4.16 CLI leave those
 at their defaults.
 
-## Unreleased (on `main`, after 0.10.0) {#unreleased-on-main}
+## Unreleased (on `main`, after 0.10.0) {#unreleased-on-main-after-0431}
 
 These are in the changelog's `[Unreleased]` section and ship in the next release.
 
