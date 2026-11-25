@@ -1,13 +1,13 @@
 ---
 title: "SDK reference"
-description: "Every public name in attackmap.sdk at v0.6.4: the analyzer protocol, the signal models and their fields, the allowed values, and the filesystem helpers."
+description: "Every public name in attackmap.sdk at v0.10.0: the analyzer protocol, the signal models and their fields, the allowed values, and the filesystem helpers."
 weight: 110
 group: "Extending"
-source: "https://github.com/mlaify/AttackMap/tree/v0.6.4/src/attackmap/sdk"
+source: "https://github.com/mlaify/AttackMap/tree/v0.10.0/src/attackmap/sdk"
 ---
 
 {{< callout type="note" >}}
-Generated from `attackmap.sdk` at [v0.6.4](https://github.com/mlaify/AttackMap/tree/v0.6.4/src/attackmap/sdk) by
+Generated from `attackmap.sdk` at [v0.10.0](https://github.com/mlaify/AttackMap/tree/v0.10.0/src/attackmap/sdk) by
 `scripts/gen-attackmap-sdk-reference.py`. Anything importable from `attackmap.sdk` is
 the stable analyzer contract; anything else in `attackmap` is internal. The
 [Analyzer SDK](sdk.md) guide explains how the pieces fit together.
@@ -37,6 +37,7 @@ the stable analyzer contract; anything else in `attackmap` is internal. The
 | `dependencies` | `list[DependencyHint]` | `list()` |
 | `vulnerabilities` | `list[Vulnerability]` | `list()` |
 | `authz_candidates` | `list[BolaCandidate]` | `list()` |
+| `logic_flaws` | `list[LogicFlawCandidate]` | `list()` |
 | `crypto_weaknesses` | `list[CryptoWeakness]` | `list()` |
 | `web_hardening_issues` | `list[WebHardeningIssue]` | `list()` |
 | `code_weaknesses` | `list[CodeWeakness]` | `list()` |
@@ -73,6 +74,7 @@ minor release, removing or renaming is a major-version break.
 | `priority` | `int` | `100` |
 | `experimental` | `bool` | `True` |
 | `enabled_by_default` | `bool` | `False` |
+| `requires_core` | `str` | `''` |
 
 ### `AnalyzerRepositoryModule` {#analyzerrepositorymodule}
 
@@ -381,7 +383,111 @@ manifests and insecure registries.
 | `severity` | `Literal['low', 'medium', 'high']` | `'medium'` |
 | `source_analyzer` | `str \| None` | `None` |
 
+### `CryptoWeakness` {#cryptoweakness}
+
+*Model* (pydantic). Module `attackmap.models`.
+
+An insecure-cryptography or weak-randomness usage (#70).
+
+Emitted by the built-in crypto finder. Heuristic and regex-based;
+the noisy families (weak hash, insecure RNG) are gated on a
+security-context identifier to keep precision high.
+
+| Field | Type | Default |
+|---|---|---|
+| `kind` | `Literal['weak_password_hash', 'weak_cipher', 'ecb_mode', 'static_iv_salt', 'insecure_random', 'insecure_tls', 'plaintext_password']` | required |
+| `file` | `str` | required |
+| `line` | `int \| None` | `None` |
+| `evidence_text` | `str \| None` | `None` |
+| `severity` | `Literal['low', 'medium', 'high']` | `'medium'` |
+| `source_analyzer` | `str \| None` | `None` |
+
+### `WebHardeningIssue` {#webhardeningissue}
+
+*Model* (pydantic). Module `attackmap.models`.
+
+A web-hardening misconfiguration (#71).
+
+Emitted by the built-in web-hardening finder. Detects
+positively-present misconfigurations (wildcard CORS with credentials,
+explicit CSRF disable, insecure cookie flags, unsafe-inline/eval CSP,
+debug enabled) rather than hard-to-judge absences.
+
+| Field | Type | Default |
+|---|---|---|
+| `kind` | `Literal['cors_wildcard_credentials', 'cors_wildcard_origin', 'cors_untrusted_origin', 'csrf_disabled', 'csrf_unprotected_session', 'insecure_cookie', 'weak_csp', 'debug_enabled']` | required |
+| `file` | `str` | required |
+| `line` | `int \| None` | `None` |
+| `evidence_text` | `str \| None` | `None` |
+| `severity` | `Literal['low', 'medium', 'high']` | `'medium'` |
+| `source_analyzer` | `str \| None` | `None` |
+
+### `TaintChain` {#taintchain}
+
+*Model* (pydantic). Module `attackmap.models`.
+
+Cross-file data-flow evidence: a route reaches a sink via imports.
+
+Emitted by the lite taint analyzer (see #45). Each entry names the
+starting route, the sink kind and location, and the chain of files
+the import-walk traversed. Confidence encodes that import-edge is a
+heuristic proxy for call-edge — real dispatch may not hit the sink.
+
+| Field | Type | Default |
+|---|---|---|
+| `route_path` | `str` | required |
+| `route_method` | `str` | required |
+| `route_file` | `str` | required |
+| `sink_kind` | `Literal['sql_execute', 'subprocess_shell', 'eval', 'exec', 'dynamic_open', 'unsafe_deserialization', 'ssti', 'ssrf', 'nosql_injection', 'open_redirect', 'path_traversal', 'zip_slip', 'code_injection', 'expression_injection', 'jndi_injection', 'ldap_injection', 'xpath_injection', 'header_injection', 'regex_injection', 'xml_external_entity']` | required |
+| `sink_file` | `str` | required |
+| `sink_line` | `int \| None` | `None` |
+| `hops` | `int` | required |
+| `files` | `list[str]` | `list()` |
+| `evidence_text` | `str \| None` | `None` |
+| `confidence` | `float` | `0.6` |
+| `sanitized` | `bool` | `False` |
+| `sanitizer_evidence` | `str \| None` | `None` |
+| `speculative` | `bool` | `False` |
+| `source_kind` | `str \| None` | `None` |
+| `source_line` | `int \| None` | `None` |
+| `flow` | `list[TaintFlowStep]` | `list()` |
+| `url_control` | `Literal['full', 'host', 'path', 'query', 'unknown'] \| None` | `None` |
+| `source_analyzer` | `str \| None` | `None` |
+
+### `TaintFlowStep` {#taintflowstep}
+
+*Model* (pydantic). Module `attackmap.models`.
+
+One step of an intra-procedural flow (#239): where the tainted value
+came from, each assignment it passed through, any sanitizer/guard bound to
+it, and the sink. Rendered as SARIF `codeFlows`. `evidence_text` is
+the code at that step (redacted like other evidence).
+
+| Field | Type | Default |
+|---|---|---|
+| `file` | `str` | required |
+| `line` | `int \| None` | `None` |
+| `kind` | `Literal['source', 'propagation', 'sanitizer', 'guard', 'sink']` | required |
+| `evidence_text` | `str \| None` | `None` |
+
+### `SignalCollector` {#signalcollector}
+
+*Class*.
+
+Append records to `result` once per identity; the first one wins.
+
+`add(Route(...))` returns whether the record was new. Lookups are set
+based, so a plugin adding thousands of records stays linear (a scan of
+the result list per append is quadratic)::
+
+    signals = SignalCollector(result)
+    signals.add(Route(path="/users", method="GET", file=rel, line=12))
+
 ## Allowed values
+
+### `SDK_VERSION` {#sdk_version}
+
+`'1.0.0'`
 
 ### `DependencyEcosystem` {#dependencyecosystem}
 
@@ -393,11 +499,11 @@ tuple of 16: `pypi`, `npm`, `go`, `cargo`, `composer`, `swiftpm`, `maven`, `nuge
 
 ### `CloudMisconfigKind` {#cloudmisconfigkind}
 
-*Type*: one of `'iac_module_unpinned'`, `'public_network_access'`, `'public_cluster_endpoint'`, `'plaintext_listener'`, `'api_no_authorizer'`, `'unencrypted_storage'`, `'public_data_access'`, `'public_invoker'`, `'privileged_container'`, `'privilege_escalation_allowed'`, `'container_runs_as_root'`, `'missing_security_context'`, `'host_path_mount'`, `'host_namespace_shared'`, `'dangerous_capability'`, `'security_profile_disabled'`, `'exposed_service'`, `'unpinned_container_image'`, `'dockerfile_remote_add'`, `'dockerfile_curl_pipe_shell'`, `'rbac_wildcard'`, `'rbac_escalation'`, `'rbac_secret_access'`, `'cluster_admin_binding'`.
+*Type*: one of `'iac_module_unpinned'`, `'public_network_access'`, `'public_cluster_endpoint'`, `'plaintext_listener'`, `'api_no_authorizer'`, `'unencrypted_storage'`, `'public_data_access'`, `'public_invoker'`, `'imds_v1_enabled'`, `'iam_privilege_escalation'`, `'privileged_container'`, `'privilege_escalation_allowed'`, `'container_runs_as_root'`, `'missing_security_context'`, `'host_path_mount'`, `'host_namespace_shared'`, `'dangerous_capability'`, `'security_profile_disabled'`, `'exposed_service'`, `'unpinned_container_image'`, `'dockerfile_remote_add'`, `'dockerfile_curl_pipe_shell'`, `'rbac_wildcard'`, `'rbac_escalation'`, `'rbac_secret_access'`, `'cluster_admin_binding'`.
 
 ### `CLOUD_MISCONFIG_KINDS` {#cloud_misconfig_kinds}
 
-tuple of 24: `iac_module_unpinned`, `public_network_access`, `public_cluster_endpoint`, `plaintext_listener`, `api_no_authorizer`, `unencrypted_storage`, `public_data_access`, `public_invoker`, `privileged_container`, `privilege_escalation_allowed`, `container_runs_as_root`, `missing_security_context`, `host_path_mount`, `host_namespace_shared`, `dangerous_capability`, `security_profile_disabled`, `exposed_service`, `unpinned_container_image`, `dockerfile_remote_add`, `dockerfile_curl_pipe_shell`, `rbac_wildcard`, `rbac_escalation`, `rbac_secret_access`, `cluster_admin_binding`
+tuple of 26: `iac_module_unpinned`, `public_network_access`, `public_cluster_endpoint`, `plaintext_listener`, `api_no_authorizer`, `unencrypted_storage`, `public_data_access`, `public_invoker`, `imds_v1_enabled`, `iam_privilege_escalation`, `privileged_container`, `privilege_escalation_allowed`, `container_runs_as_root`, `missing_security_context`, `host_path_mount`, `host_namespace_shared`, `dangerous_capability`, `security_profile_disabled`, `exposed_service`, `unpinned_container_image`, `dockerfile_remote_add`, `dockerfile_curl_pipe_shell`, `rbac_wildcard`, `rbac_escalation`, `rbac_secret_access`, `cluster_admin_binding`
 
 ### `CloudMisconfigPlatform` {#cloudmisconfigplatform}
 
@@ -420,6 +526,16 @@ tuple of 9: `apple_ats_insecure_loads`, `apple_custom_url_scheme`, `apple_webvie
 tuple of 26: `prototype_pollution`, `mass_assignment`, `jwt_weakness`, `jwt_alg_confusion`, `jwt_unverified_decode`, `jwt_claims_unchecked`, `jwt_header_trust`, `jwt_weak_secret`, `oauth_missing_state`, `oauth_implicit_flow`, `oauth_redirect_uri_loose`, `oauth_missing_pkce`, `session_fixation`, `session_weak_secret`, `xxe`, `redos`, `insecure_upload`, `graphql_exposure`, `graphql_no_query_limits`, `graphql_batching`, `prompt_injection_attempt`, `unbounded_copy`, `format_string`, `native_command_exec`, `tainted_copy_length`, `alloc_size_overflow`
 
 ## Filesystem helpers
+
+### `plugin_version` {#plugin_version}
+
+```python
+def plugin_version(distribution: str, default: str = '0+unknown') -> str
+```
+
+The installed version of `distribution` (your plugin's PyPI name),
+for `AnalyzerMetadata.version`, so it can't drift from `pyproject.toml`.
+`default` when it isn't installed (running from a source tree).
 
 ### `walk_repo` {#walk_repo}
 
@@ -476,7 +592,7 @@ frozenset of 18: `.attackmap`, `.attackmap-gui`, `.git`, `.mypy_cache`, `.next`,
 ### `iter_repo_files` {#iter_repo_files}
 
 ```python
-def iter_repo_files(root: str | Path, *, suffixes: Collection[str] | None = None, names: Collection[str] | None = None, skip_dirs: Collection[str] = frozenset({'venv', 'out', '__pycache__', '.pytest_cache', '.tox', '.venv', 'bower_components', '.turbo', '.attackmap', '.git', 'dist', '.attackmap-gui', '.mypy_cache', 'vendor', 'build', 'node_modules', '.next', 'target'}), max_bytes: int | None = None, include_tests: bool = True, on_skip: Callable[[Path, str], None] | None = None) -> Iterator[Path]
+def iter_repo_files(root: str | Path, *, suffixes: Collection[str] | None = None, names: Collection[str] | None = None, skip_dirs: Collection[str] = frozenset({'node_modules', '.pytest_cache', '.tox', 'target', '.next', '.attackmap-gui', '.attackmap', 'bower_components', 'venv', 'build', 'out', '.turbo', '.venv', '__pycache__', '.git', 'vendor', '.mypy_cache', 'dist'}), max_bytes: int | None = None, include_tests: bool = True, on_skip: Callable[[Path, str], None] | None = None) -> Iterator[Path]
 ```
 
 Yield the repo's regular files, sorted and depth-first.
@@ -538,6 +654,16 @@ The stripped text of 1-indexed `line`, truncated to `max_len`.
     put the snippet on the wrong line.
     
 
+### `snippet_at` {#snippet_at}
+
+```python
+def snippet_at(content: str, offset: int, max_len: int = 200) -> str
+```
+
+The stripped text of the line holding `offset`, truncated like
+`line_snippet`. O(line length), so a plugin can snippet every match
+in a large file (#382).
+
 ## Taint sink plugins
 
 ### `TAINT_SINK_PLUGIN_GROUP` {#taint_sink_plugin_group}
@@ -546,7 +672,7 @@ The stripped text of 1-indexed `line`, truncated to `max_len`.
 
 ### `TAINT_SINK_KINDS` {#taint_sink_kinds}
 
-tuple of 19: `sql_execute`, `subprocess_shell`, `eval`, `exec`, `dynamic_open`, `path_traversal`, `zip_slip`, `unsafe_deserialization`, `ssti`, `ssrf`, `nosql_injection`, `open_redirect`, `code_injection`, `expression_injection`, `jndi_injection`, `ldap_injection`, `xpath_injection`, `header_injection`, `regex_injection`
+tuple of 20: `sql_execute`, `subprocess_shell`, `eval`, `exec`, `dynamic_open`, `path_traversal`, `zip_slip`, `unsafe_deserialization`, `ssti`, `ssrf`, `nosql_injection`, `open_redirect`, `code_injection`, `expression_injection`, `jndi_injection`, `ldap_injection`, `xpath_injection`, `header_injection`, `regex_injection`, `xml_external_entity`
 
 ### `validate_taint_sink` {#validate_taint_sink}
 

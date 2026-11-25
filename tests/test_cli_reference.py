@@ -70,7 +70,7 @@ def test_documented_choices_and_defaults_match(name: str) -> None:
             continue
         if choices:
             documented = tuple(c.strip() for c in choices.split(","))
-            actual = CHOICES[opt]() if opt in CHOICES else tuple(getattr(params[opt].type, "choices", ()))
+            actual = CHOICES[opt]() if opt in CHOICES else tuple(getattr(getattr(params[opt], "type", None), "choices", ()))  # typer 0.29: no .type
             if actual and set(documented) != set(actual):
                 problems.append(f"{opt}: docs list {{{','.join(documented)}}}, CLI accepts {{{','.join(actual)}}}")
         default = DEFAULT.search(description)

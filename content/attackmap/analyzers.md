@@ -105,8 +105,8 @@ and `attackmap-report.json` lists it under `scan.analyzer_errors`. Pass
 
 {{< callout type="warn" title="Version note" >}}
 Opt-in handling and the hint, `(priority, name)` run order, and failure
-isolation (`analyzer_errors`, `--strict-analyzers`) are on core `main` and
-ship in the first release after **v0.4.31**. On v0.4.31 and earlier, every
+isolation (`analyzer_errors`, `--strict-analyzers`) need core **v0.5.0** or
+later. On v0.4.31 and earlier, every
 installed analyzer whose `detect()` matches runs (`enabled_by_default` and
 `priority` are ignored, built-ins run first), and one failing analyzer
 aborts the scan. See [Feature availability](feature-availability.md).

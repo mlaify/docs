@@ -45,25 +45,30 @@ them from `attackmap analyze --help` and hides or drops what your CLI lacks.
 | Output filtering | `--format {all,json,markdown}` (accepted but ignored before 0.4.30) | 0.4.30 | ✓ |
 | Pinned plugin auto-install | `--install-missing` | 0.4.31 | |
 | Official plugins only | `--trusted-analyzers-only` | 0.4.31 | |
+| Analyzer failure isolation; fail fast on request | `scan.analyzer_errors`; `--strict-analyzers` | 0.5.0 | |
+| Analyzer run order by `priority`; opt-in analyzers and the "Opt-in analyzers match this repo but were not run" hint | `enabled_by_default=False`, `-m` | 0.5.0 | |
+| Shared plugin walker | `attackmap.sdk.fs` (see [Analyzer SDK](sdk.md)) | 0.5.0 | |
+| CLI capabilities for GUIs and wrappers | `attackmap capabilities` | 0.5.0 | |
+| Stable rule ids | `attackmap rules [--json]` | 0.5.0 | |
+| Trusted suppressions | `--suppress-from-ref`, `--allow-pr-suppressions` | 0.5.0 | |
+| Suppression expiry gate | `--strict-suppressions` | 0.5.0 | |
+| Newly-suppressed gate | `--fail-on-new-suppression` | 0.5.0 | |
+| Secrets in git history | `--secrets-history N` | 0.6.0 | |
+| Deployable Sigma rules for detection opportunities, with a detection-coverage table | `detection_opportunities[].sigma` in `defensive-review.json`; `attackmap-detections/*.yml` with `--format json` or `all` | 0.6.0 | |
+| Confidence filter | `--min-confidence {low,medium,high}` | 0.8.0 | ✓ |
+| Local / OpenAI-compatible LLM endpoint | `--llm-provider local`, `--llm-base-url` | 0.8.0 | ✓ |
+| Versioned report schema (`schema_version`, frozen snapshots) | `attackmap-report.json` (1.1.0 in 0.8.0, 1.2.0 in 0.10.0) | 0.8.0 | |
+| Analyzer SDK 1.0: `requires_core`, conformance helper | `AnalyzerMetadata.requires_core`, `attackmap.sdk.testing.assert_conforms` | 0.8.0 | |
 
 The macOS app treats the whole verify jury as one capability and enables it
 when the CLI has `--verify-votes` (0.4.16). `--hunt-lenses`, `--hunt-rounds`
 and `--hunt-budget` need 0.4.17 and 0.4.18, so on a 0.4.16 CLI leave those
 at their defaults.
 
-## Unreleased (on `main`, after 0.4.31) {#unreleased-on-main-after-0431}
+## Unreleased (on `main`, after 0.10.0) {#unreleased-on-main-after-0431}
 
-These are in the changelog's `[Unreleased]` section and ship in the first
-release after 0.4.31.
+These are in the changelog's `[Unreleased]` section and ship in the next release.
 
 | Feature | Command / flag |
 |---|---|
-| Analyzer failure isolation; fail fast on request | `scan.analyzer_errors`; `--strict-analyzers` |
-| Analyzer run order by `priority`; opt-in analyzers and the "Opt-in analyzers match this repo but were not run" hint | `enabled_by_default=False`, `-m` |
-| Shared plugin walker | `attackmap.sdk.fs` (see [Analyzer SDK](sdk.md)) |
-| Stable rule ids | `attackmap rules [--json]` |
-| Trusted suppressions | `--suppress-from-ref`, `--allow-pr-suppressions` |
-| Suppression expiry gate | `--strict-suppressions` |
-| Newly-suppressed gate | `--fail-on-new-suppression` |
-| Secrets in git history | `--secrets-history N` |
-| Deployable Sigma rules for detection opportunities, with a detection-coverage table | `detection_opportunities[].sigma` in `defensive-review.json` (schema 1.5.0); `attackmap-detections/*.yml` with `--format json` or `all` |
+| Benchmark precision floor | `precision_floor` in the benchmark manifest; `attackmap bench` fails under it |
