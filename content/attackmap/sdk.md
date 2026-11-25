@@ -21,8 +21,7 @@ repo disagree, the repo is correct.
 {{< callout type="warn" title="Version note" >}}
 Run order by `priority`, opt-in `enabled_by_default=False`, failure
 isolation (`analyzer_errors`, `--strict-analyzers`) and the
-`attackmap.sdk.fs` helpers are on core `main` and ship in the first release
-after **v0.4.31**. On v0.4.31 and earlier, built-ins always run first,
+`attackmap.sdk.fs` helpers need core **v0.5.0** or later. On v0.4.31 and earlier, built-ins always run first,
 `priority` and `enabled_by_default` are ignored, an analyzer that raises
 aborts the whole scan, and `attackmap.sdk.fs` doesn't exist.
 {{< /callout >}}
@@ -168,6 +167,7 @@ major-version break.
 | `priority` | `int` (≥ 0) | `100` | Run order across built-ins and plugins: lower runs first, ties broken by name. Merge is first-seen-wins in that order, so a lower value also wins a duplicate signal. Convention: 0–49 broad language analyzers, 50–149 framework analyzers, 150+ app-specific analyzers. |
 | `experimental` | `bool` | `True` | Whether the analyzer is still stabilizing. Doesn't affect execution, only how core presents it in listings. Experimental analyzers should normally leave `enabled_by_default` False. |
 | `enabled_by_default` | `bool` | `False` | Whether to run without an explicit `--module`. False makes it opt-in; see [Opt-in analyzers](#opt-in-analyzers). Broad language analyzers set it True; specialty framework and app analyzers usually leave it False. |
+| `requires_core` | `str` | `""` | Core versions the analyzer works with, as comma-separated clauses (`">=0.8,<2"`; operators `>=`, `>`, `<=`, `<`, `==`, `!=`). Core skips the analyzer at load time, with an upgrade hint, when the running version doesn't match. Empty means any. Core 0.8.0+. |
 
 `metadata.ecosystems` is a read-only, de-duplicated, lowercased tuple of
 `languages` + `targets`. The legacy `ecosystems=` constructor argument is still

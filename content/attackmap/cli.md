@@ -43,7 +43,7 @@ invocation is unchanged; the single-repo-only options below (diff, `--llm`,
 | `--module <name>` / `-m` | Run only the named analyzer(s); repeatable. Also the only way to run an opt-in analyzer (see below). A missing official analyzer is installed, pinned to the commit in AttackMap's plugin lock, only with `--install-missing` or after an interactive confirmation. An unknown name that isn't an official analyzer is an error. |
 | `--install-missing` | Install missing official analyzers named by `--module` without prompting (0.4.31+). |
 | `--trusted-analyzers-only` | Load only official AttackMap analyzer plugins and skip any other installed package that registers one. Also `ATTACKMAP_TRUSTED_ANALYZERS_ONLY=1` (0.4.31+). |
-| `--strict-analyzers` | Fail fast if an analyzer raises or returns an invalid result, instead of skipping it and listing it under `scan.analyzer_errors`. For plugin development and CI (after 0.4.31). |
+| `--strict-analyzers` | Fail fast if an analyzer raises or returns an invalid result, instead of skipping it and listing it under `scan.analyzer_errors`. For plugin development and CI (0.5.0+). |
 
 Without `--module`, every installed analyzer whose `detect()` matches the repo
 runs, in `(priority, name)` order, except **opt-in** analyzers
@@ -57,7 +57,7 @@ Opt-in analyzers match this repo but were not run: omeka-s. Enable with -m omeka
 If an analyzer fails, the scan continues without it. The console prints
 `Analyzer '<name>' failed and was skipped: …` and `attackmap-report.json` lists
 it under `scan.analyzer_errors`. Opt-in handling, run order and this failure
-isolation ship in the first release after 0.4.31; earlier releases run every
+isolation need 0.5.0 or later; earlier releases run every
 matching analyzer and abort on the first failure.
 
 ### Dependencies
@@ -71,6 +71,7 @@ matching analyzer and abort on the first failure.
 
 | Option | Description |
 | --- | --- |
+| `--min-confidence {low,medium,high}` | Report only findings at or above this confidence: `low` is everything (0.8.0+). |
 | `--recall` | Widen taint discovery (deeper import-hop depth, capability-reach enumeration). The extra reach is marked **speculative**, kept out of `--fail-on-new-high`, and left for `--hunt --verify` to adjudicate. See [Recall mode](scanning.md#recall-mode). |
 
 ### AI review
@@ -86,7 +87,8 @@ matching analyzer and abort on the first failure.
 | `--hunt-budget <tokens>` | With `--verify`: cap total hunt output tokens across rounds. |
 | `--triage` | Cluster, de-duplicate, and rank existing findings into a shortlist (deterministic fallback when no LLM). |
 | `--remediate` | Review-first remediation suggestions. |
-| `--llm-provider {claude,openai}` | Provider (default `claude`). |
+| `--llm-provider {claude,openai,local}` | Provider (default `claude`). `local` is an OpenAI-compatible server on this machine or network: Ollama, llama.cpp, vLLM or LM Studio (0.8.0+). |
+| `--llm-base-url <url>` | With `--llm-provider local`: the server's OpenAI-compatible base URL (default `http://127.0.0.1:11434/v1`, Ollama) (0.8.0+). |
 | `--llm-model <id>` | Model ID (pass-through). Defaults: `claude-opus-4-8` / `gpt-5-codex`. |
 | `--llm-effort {low,medium,high,xhigh,max}` | Reasoning effort (default `high`). |
 | `--llm-backend {auto,api,cli}` | Force a backend (default `auto`). |
@@ -104,10 +106,10 @@ See [AI review](llm.md) for details and credential resolution.
 | `--pr-comment <file>` | Write a Markdown PR summary comment. |
 | `--no-suppress` | Ignore all suppressions (baseline + inline) for a full audit. |
 | `--suppress-file <file>` | Override the `.attackmap-suppress.yaml` location. |
-| `--suppress-from-ref <ref>` | Trust only suppressions that already exist at this git ref, such as the PR's base branch. Suppress-file entries and inline directives added since then are reported as *pending* and not applied (after 0.4.31). An inline directive already at the ref doesn't cover the line below it if that line was added or changed since (after 0.6.3). |
-| `--allow-pr-suppressions` | With `--suppress-from-ref`, apply suppressions added since the ref anyway. They are still listed (after 0.4.31). |
-| `--strict-suppressions` | Exit 2 if any suppression has expired (past its `expires:` / `until=` date) (after 0.4.31). |
-| `--fail-on-new-suppression` | Exit non-zero if a finding that was active in the baseline is suppressed in this run, for example by a suppression the PR added, or excluded from it by an `.attackmap-output` marker (after 0.6.3). Needs `--baseline` (after 0.4.31). |
+| `--suppress-from-ref <ref>` | Trust only suppressions that already exist at this git ref, such as the PR's base branch. Suppress-file entries and inline directives added since then are reported as *pending* and not applied (0.5.0+). An inline directive already at the ref doesn't cover the line below it if that line was added or changed since (after 0.6.3). |
+| `--allow-pr-suppressions` | With `--suppress-from-ref`, apply suppressions added since the ref anyway. They are still listed (0.5.0+). |
+| `--strict-suppressions` | Exit 2 if any suppression has expired (past its `expires:` / `until=` date) (0.5.0+). |
+| `--fail-on-new-suppression` | Exit non-zero if a finding that was active in the baseline is suppressed in this run, for example by a suppression the PR added, or excluded from it by an `.attackmap-output` marker (after 0.6.3). Needs `--baseline` (0.5.0+). |
 
 See [Suppressing findings](ci.md#suppressing-findings) for the suppression file
 format and inline `attackmap:ignore` directives.
@@ -137,7 +139,7 @@ isn't a directory, you decline the prompt, or a `pip install` fails.
 ## `bench`
 
 ```bash
-attackmap bench [--benchmark <manifest>] [--root <dir>] [-o <dir>] [--fail-under <0-1>]
+attackmap bench [--benchmark <manifest>] [--root <dir>] [-o <dir>] [--baseline <results.json>] [--fail-under <0-1>]
 ```
 
 Scores AttackMap's findings against a labeled ground-truth corpus and prints
@@ -153,6 +155,7 @@ for the corpus format.
 | `--benchmark <path>` | Benchmark manifest (default `evals/benchmark/benchmark.json`). |
 | `--root <dir>` | Directory the manifest's case paths are relative to (default `.`). |
 | `--output <dir>` / `-o` | Also write `benchmark-results.md` and `benchmark-results.json` here. Results are always printed to stdout. |
+| `--baseline <path>` | A committed `benchmark-results.json`: exit non-zero if any class's precision or recall drops more than 5 points below it (0.6.0+). |
 | `--fail-under <float>` | Exit 1 if any scored detector class's precision or recall is below this value (0–1). For CI regression gating. |
 
 Exit codes: 2 if the manifest isn't found, 1 if any case failed to scan or the
@@ -163,4 +166,4 @@ Exit codes: 2 if the manifest isn't found, 1 if any case failed to scan or the
 | Command | Description |
 | --- | --- |
 | `attackmap modules [--json]` | List installed analyzer modules. |
-| `attackmap rules [--json]` | List every core detector's stable rule id, the value for suppress `rule:` and `attackmap:ignore[...]` (after 0.4.31). |
+| `attackmap rules [--json]` | List every core detector's stable rule id, the value for suppress `rule:` and `attackmap:ignore[...]` (0.5.0+). |
